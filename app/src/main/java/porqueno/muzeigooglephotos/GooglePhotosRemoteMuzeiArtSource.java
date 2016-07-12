@@ -63,13 +63,13 @@ public class GooglePhotosRemoteMuzeiArtSource extends RemoteMuzeiArtSource {
 			e.printStackTrace();
 		}
 		// Fetch URL from google photos
-		String photo = "https://www.googleapis.com/drive/v3/files/1VUOucLBywhhneWMjoa5JYqZcVweKCjoS6Q?alt=media";
-		photo += "&access_token=" + token;
+		PhotosModelDbHelper pdb = PhotosModelDbHelper.getHelper(getApplicationContext());
+		PhotoModel photo = pdb.getNextPhoto();
 
 		publishArtwork(new Artwork.Builder()
 				.title("Photo title")
 				.byline("Byline")
-				.imageUri(Uri.parse(photo))
+				.imageUri(Uri.parse(photo.getUrl(token)))
 				.token("UNIQUE KEY FOR PHOTO")
 				.viewIntent(new Intent(Intent.ACTION_VIEW,
 						Uri.parse("http://500px.com/photo/162495199")))

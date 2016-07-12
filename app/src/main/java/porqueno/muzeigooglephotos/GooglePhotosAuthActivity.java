@@ -313,9 +313,8 @@ public class GooglePhotosAuthActivity extends Activity
 					.execute();
 			List<File> files = result.getFiles();
 			if (files != null) {
-				for (File file : files) {
-					fileInfo.add(file.getWebContentLink());
-				}
+				PhotosModelDbHelper pdb = PhotosModelDbHelper.getHelper(getApplicationContext());
+				pdb.savePhotos(files);
 			}
 			return fileInfo;
 		}
@@ -329,7 +328,7 @@ public class GooglePhotosAuthActivity extends Activity
 		@Override
 		protected void onPostExecute(List<String> output) {
 			mProgress.dismiss();
-			finish();
+			//finish();
 		}
 
 		@Override
