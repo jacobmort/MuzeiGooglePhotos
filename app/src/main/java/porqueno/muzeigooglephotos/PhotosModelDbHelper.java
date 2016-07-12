@@ -42,7 +42,7 @@ public class PhotosModelDbHelper extends SQLiteOpenHelper {
 
 	public void savePhotos(List<File> photos){
 		SQLiteDatabase db = this.getWritableDatabase();
-		String sql = "INSERT INTO "+ PhotosModelContract.PhotoEntry.TABLE_NAME +" VALUES (?,?);";
+		String sql = "INSERT OR IGNORE INTO "+ PhotosModelContract.PhotoEntry.TABLE_NAME +" VALUES (?,?);";
 		SQLiteStatement statement = db.compileStatement(sql);
 		try {
 			db.beginTransaction();
@@ -64,19 +64,8 @@ public class PhotosModelDbHelper extends SQLiteOpenHelper {
 		Cursor c = db.rawQuery("SELECT * FROM " + PhotosModelContract.PhotoEntry.TABLE_NAME + " ORDER BY RANDOM() LIMIT 1", null);
 		try{
 			c.moveToFirst();
-			int viewed = (
-					c.getInt(
-							c.getColumnIndexOrThrow(
-									PhotosModelContract.PhotoEntry.COLUMN_NAME_PHOTO_USED
-							)
-					)
-			);
 			return new PhotoModel(
-					c.getString(
-							c.getColumnIndexOrThrow(
-									PhotosModelContract.PhotoEntry.COLUMN_NAME_PHOTO_ID
-							)
-					),
+					this.getId(c),
 					false
 			);
 
@@ -87,5 +76,24 @@ public class PhotosModelDbHelper extends SQLiteOpenHelper {
 			db.close();
 		}
 
+	}
+
+	public String getId(Cursor c) {
+		return c.getString(
+				c.getColumnIndexOrThrow(
+						PhotosModelContract.PhotoEntry.COLUMN_NAME_PHOTO_ID
+				)
+		);
+	}
+
+	public boolean getViewed(Cursor c) {
+		int viewed = (
+				c.getInt(
+						c.getColumnIndexOrThrow(
+								PhotosModelContract.PhotoEntry.COLUMN_NAME_PHOTO_USED
+						)
+				)
+		);
+		return viewed  == 1;
 	}
 }
