@@ -25,12 +25,12 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.ExponentialBackOff;
+import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -46,9 +46,10 @@ public class GooglePhotosAuthActivity extends Activity
 
 	public static final String PREF_FILE_NAME = "fileName";
 	public static final String PREF_ACCOUNT_NAME = "accountName";
+	public static final String PREF_PAGE_TOKEN = "pageToken";
 	public static final String[] DRIVE_SCOPES = { DriveScopes.DRIVE_PHOTOS_READONLY };
 
-	private static final String PHOTO_FIELDS = "files(id),nextPageToken";
+	private static final String PHOTO_FIELDS = "files(id,createdTime),nextPageToken";
 	private GoogleAccountCredential mCredential;
 	private ProgressDialog mProgress;
 
@@ -269,7 +270,7 @@ public class GooglePhotosAuthActivity extends Activity
 	 * An asynchronous task that handles the Drive API call.
 	 * Placing the API calls in their own task ensures the UI stays responsive.
 	 */
-	private class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
+	private class MakeRequestTask extends AsyncTask<Void, Void, String> {
 		private com.google.api.services.drive.Drive mService = null;
 		private Exception mLastError = null;
 
@@ -287,14 +288,21 @@ public class GooglePhotosAuthActivity extends Activity
 		 * @param params no parameters needed for this task.
 		 */
 		@Override
-		protected List<String> doInBackground(Void... params) {
+		protected String doInBackground(Void... params) {
+			String pageToken;
 			try {
-				return getDataFromApi();
+				pageToken = getLastPageToken(getApplicationContext());
+				pageToken = getDataFromApi(pageToken);
+				while (pageToken != null) {
+					setLastPageToken(getApplicationContext(), pageToken);
+					pageToken = getDataFromApi(pageToken);
+				}
 			} catch (Exception e) {
 				mLastError = e;
 				cancel(true);
 				return null;
 			}
+			return pageToken;
 		}
 
 		/**
@@ -303,20 +311,22 @@ public class GooglePhotosAuthActivity extends Activity
 		 *         found.
 		 * @throws IOException
 		 */
-		private List<String> getDataFromApi() throws IOException {
-			// Get a list of up to 10 files.
-			List<String> fileInfo = new ArrayList<String>();
-			FileList result = mService.files().list()
+		private String getDataFromApi(String pageToken) throws IOException {
+			Drive.Files.List apiCall = mService.files().list()
 					.setSpaces("photos")
+					.setOrderBy("createdTime")
 					.setFields(PHOTO_FIELDS)
-					.setPageSize(1000)
-					.execute();
+					.setPageSize(1000);
+			if (pageToken != null) {
+				apiCall.setPageToken(pageToken);
+			}
+			FileList result = apiCall.execute();
 			List<File> files = result.getFiles();
 			if (files != null) {
 				PhotosModelDbHelper pdb = PhotosModelDbHelper.getHelper(getApplicationContext());
 				pdb.savePhotos(files);
 			}
-			return fileInfo;
+			return result.getNextPageToken();
 		}
 
 
@@ -326,7 +336,7 @@ public class GooglePhotosAuthActivity extends Activity
 		}
 
 		@Override
-		protected void onPostExecute(List<String> output) {
+		protected void onPostExecute(String output) {
 			mProgress.dismiss();
 			//finish();
 		}
@@ -356,5 +366,18 @@ public class GooglePhotosAuthActivity extends Activity
 	public static String getGoogleAccountName(Context ctx) {
 		return ctx.getSharedPreferences(PREF_FILE_NAME, Context.MODE_PRIVATE)
 				.getString(PREF_ACCOUNT_NAME, null);
+	}
+
+	public static void setLastPageToken(Context ctx, String pageToken) {
+		SharedPreferences settings =
+				ctx.getApplicationContext().getSharedPreferences(PREF_FILE_NAME, Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = settings.edit();
+		editor.putString(PREF_PAGE_TOKEN, pageToken);
+		editor.apply();
+	}
+
+	public static String getLastPageToken(Context ctx) {
+		return ctx.getSharedPreferences(PREF_FILE_NAME, Context.MODE_PRIVATE)
+				.getString(PREF_PAGE_TOKEN, null);
 	}
 }
