@@ -87,11 +87,13 @@ public class PhotosModelDbHelperTest {
 	}
 
 	@Test
-	public void getNextPhoto() throws Exception {
-		// Empty DB returns null
+	public void getNextPhotoEmtpyDB() throws Exception {
 		PhotoModel emptyPhoto = database.getNextPhoto();
 		assertNull(emptyPhoto);
+	}
 
+	@Test
+	public void getNextPhoto() throws Exception {
 		seedDb(createPhotoOne());
 		seedDb(createPhotoTwo());
 
@@ -108,11 +110,24 @@ public class PhotosModelDbHelperTest {
 		PhotoModel secondPhoto = database.getNextPhoto();
 		assertThat(firstPhoto.getId(), not(secondPhoto.getId()));
 		assertTrue(secondPhoto.getViewed());
+		c.close();
+		db.close();
+	}
 
-		// Should reset viewed in DB
+	@Test
+	public void getNextPhotoReset() throws Exception {
+		seedDb(createPhotoOne());
+		seedDb(createPhotoTwo());
+		database.getNextPhoto();
+		database.getNextPhoto();
+
+		SQLiteDatabase db = database.getReadableDatabase();
+		Cursor c = db.rawQuery("SELECT * FROM " + PhotosModelContract.PhotoEntry.TABLE_NAME + " WHERE "+ PhotosModelContract.PhotoEntry.COLUMN_NAME_PHOTO_USED + "= 1", null);
+		assertThat(c.getCount(), is(2));
+
 		PhotoModel loopAroundPhoto = database.getNextPhoto();
 		assertThat(loopAroundPhoto.getId(), anyOf(is("1"), is("2")));
-
+		c.close();
 		db.close();
 	}
 }

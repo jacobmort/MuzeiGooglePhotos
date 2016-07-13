@@ -69,7 +69,7 @@ public class PhotosModelDbHelper extends SQLiteOpenHelper {
 	public PhotoModel getNextPhoto(boolean reset) {
 		SQLiteDatabase db = this.getReadableDatabase();
 		PhotoModel photo = null;
-		Cursor c = db.rawQuery("SELECT * FROM " + PhotosModelContract.PhotoEntry.TABLE_NAME + " WHERE viewed = 0 ORDER BY RANDOM() LIMIT 1", null);
+		Cursor c = db.rawQuery("SELECT * FROM " + PhotosModelContract.PhotoEntry.TABLE_NAME + " WHERE " + PhotosModelContract.PhotoEntry.COLUMN_NAME_PHOTO_USED + " = 0 ORDER BY RANDOM() LIMIT 1", null);
 		try{
 			if (c.moveToFirst()) {
 				photo = new PhotoModel(
