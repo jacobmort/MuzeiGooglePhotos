@@ -1,11 +1,14 @@
 package porqueno.muzeigooglephotos;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
+
 import com.google.api.services.drive.model.File;
+
 import java.util.List;
 
 /**
@@ -60,22 +63,53 @@ public class PhotosModelDbHelper extends SQLiteOpenHelper {
 	}
 
 	public PhotoModel getNextPhoto() {
-		SQLiteDatabase db = this.getReadableDatabase();
-		Cursor c = db.rawQuery("SELECT * FROM " + PhotosModelContract.PhotoEntry.TABLE_NAME + " ORDER BY RANDOM() LIMIT 1", null);
-		try{
-			c.moveToFirst();
-			return new PhotoModel(
-					this.getId(c),
-					false
-			);
+		return this.getNextPhoto(false);
+	}
 
+	public PhotoModel getNextPhoto(boolean reset) {
+		SQLiteDatabase db = this.getReadableDatabase();
+		PhotoModel photo = null;
+		Cursor c = db.rawQuery("SELECT * FROM " + PhotosModelContract.PhotoEntry.TABLE_NAME + " WHERE viewed = 0 ORDER BY RANDOM() LIMIT 1", null);
+		try{
+			if (c.moveToFirst()) {
+				photo = new PhotoModel(
+						this.getId(c),
+						true
+				);
+				ContentValues values = new ContentValues();
+				values.put(PhotosModelContract.PhotoEntry.COLUMN_NAME_PHOTO_USED, 1);
+
+				String selection = PhotosModelContract.PhotoEntry.COLUMN_NAME_PHOTO_ID + " = ?";
+				String[] selectionArgs = { photo.getId() };
+
+				db.update(
+						PhotosModelContract.PhotoEntry.TABLE_NAME,
+						values,
+						selection,
+						selectionArgs
+				);
+			} else if (!reset){
+				PhotosModelDbHelper.resetViewedStatus(db);
+				return this.getNextPhoto(true);
+			}
 		} finally {
 			if (c != null) {
 				c.close();
 			}
 			db.close();
 		}
+		return photo;
+	}
 
+	private static void resetViewedStatus(SQLiteDatabase db) {
+		ContentValues values = new ContentValues();
+		values.put(PhotosModelContract.PhotoEntry.COLUMN_NAME_PHOTO_USED, false);
+
+		db.update(
+				PhotosModelContract.PhotoEntry.TABLE_NAME,
+				values,
+				null,
+				null);
 	}
 
 	public String getId(Cursor c) {

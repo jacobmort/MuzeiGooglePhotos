@@ -18,7 +18,10 @@ import java.util.ArrayList;
 import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertNull;
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
+import static org.hamcrest.core.AnyOf.anyOf;
 
 @RunWith(AndroidJUnit4.class)
 public class PhotosModelDbHelperTest {
@@ -60,13 +63,15 @@ public class PhotosModelDbHelperTest {
 	}
 
 	@Test
-	public void savePhotosThatDoNotAlreadyExist() throws Exception {
+	public void savePhotos() throws Exception {
 		ArrayList<File> photos = new ArrayList<>();
 		File photoOne = createPhotoOne();
+
 		seedDb(photoOne);
 		photos.add(createPhotoOne());
 		photos.add(createPhotoTwo());
 		database.savePhotos(photos);
+
 		SQLiteDatabase db = database.getReadableDatabase();
 		Cursor c = db.rawQuery("SELECT * FROM " + PhotosModelContract.PhotoEntry.TABLE_NAME, null);
 		c.moveToFirst();
@@ -76,6 +81,38 @@ public class PhotosModelDbHelperTest {
 		c.moveToNext();
 		assertTrue(database.getId(c).equals("2"));
 		assertThat(database.getViewed(c), is(false));
+
 		c.close();
+		db.close();
+	}
+
+	@Test
+	public void getNextPhoto() throws Exception {
+		// Empty DB returns null
+		PhotoModel emptyPhoto = database.getNextPhoto();
+		assertNull(emptyPhoto);
+
+		seedDb(createPhotoOne());
+		seedDb(createPhotoTwo());
+
+		// Get photo and set viewed
+		PhotoModel firstPhoto = database.getNextPhoto();
+		SQLiteDatabase db = database.getReadableDatabase();
+		String[] args = { firstPhoto.getId() };
+		Cursor c = db.rawQuery("SELECT * FROM " + PhotosModelContract.PhotoEntry.TABLE_NAME + " WHERE photo_id=?", args);
+		assertThat(c.getCount(), is(1));
+		c.moveToFirst();
+		assertTrue(firstPhoto.getViewed());
+
+		// Get other photo
+		PhotoModel secondPhoto = database.getNextPhoto();
+		assertThat(firstPhoto.getId(), not(secondPhoto.getId()));
+		assertTrue(secondPhoto.getViewed());
+
+		// Should reset viewed in DB
+		PhotoModel loopAroundPhoto = database.getNextPhoto();
+		assertThat(loopAroundPhoto.getId(), anyOf(is("1"), is("2")));
+
+		db.close();
 	}
 }
