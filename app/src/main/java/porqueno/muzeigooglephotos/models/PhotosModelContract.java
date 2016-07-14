@@ -1,4 +1,4 @@
-package porqueno.muzeigooglephotos;
+package porqueno.muzeigooglephotos.models;
 
 import android.provider.BaseColumns;
 
@@ -15,12 +15,14 @@ public class PhotosModelContract {
 			public static final String TABLE_NAME = "photos";
 			public static final String COLUMN_NAME_PHOTO_ID = "photo_id";
 			public static final String COLUMN_NAME_PHOTO_USED = "viewed";
+			public static final String COLUMN_NAME_CREATED = "photo_created_at";
 		}
 
 	public static final String SQL_CREATE_ENTRIES =
 			"CREATE TABLE " + PhotoEntry.TABLE_NAME + " (" +
 					PhotoEntry.COLUMN_NAME_PHOTO_ID + " TEXT PRIMARY KEY," +
-					PhotosModelContract.PhotoEntry.COLUMN_NAME_PHOTO_USED + " INTEGER DEFAULT 0" +
+					PhotosModelContract.PhotoEntry.COLUMN_NAME_PHOTO_USED + " INTEGER DEFAULT 0," +
+					PhotoEntry.COLUMN_NAME_CREATED + " LONG" +
 			" )";
 
 	public static final String SQL_DELETE_ENTRIES =

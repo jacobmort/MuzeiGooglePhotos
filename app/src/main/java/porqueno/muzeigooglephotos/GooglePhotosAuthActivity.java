@@ -7,7 +7,6 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -34,6 +33,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import porqueno.muzeigooglephotos.models.AppSharedPreferences;
+import porqueno.muzeigooglephotos.models.PhotosModelDbHelper;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
@@ -44,12 +45,9 @@ public class GooglePhotosAuthActivity extends Activity
 	static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
 	static final int REQUEST_PERMISSION_GET_ACCOUNTS = 1003;
 
-	public static final String PREF_FILE_NAME = "fileName";
-	public static final String PREF_ACCOUNT_NAME = "accountName";
-	public static final String PREF_PAGE_TOKEN = "pageToken";
 	public static final String[] DRIVE_SCOPES = { DriveScopes.DRIVE_PHOTOS_READONLY };
 
-	private static final String PHOTO_FIELDS = "files(id,createdTime),nextPageToken";
+	private static final String PHOTO_FIELDS = "files(createdTime,id,imageMediaMetadata/time),nextPageToken";
 	private GoogleAccountCredential mCredential;
 	private ProgressDialog mProgress;
 
@@ -104,7 +102,7 @@ public class GooglePhotosAuthActivity extends Activity
 	private void chooseAccount() {
 		if (EasyPermissions.hasPermissions(
 				this, Manifest.permission.GET_ACCOUNTS)) {
-			String accountName = getGoogleAccountName(getApplicationContext());
+			String accountName = AppSharedPreferences.getGoogleAccountName(getApplicationContext());
 			if (accountName != null) {
 				mCredential.setSelectedAccountName(accountName);
 				getResultsFromApi();
@@ -152,11 +150,7 @@ public class GooglePhotosAuthActivity extends Activity
 					String accountName =
 							data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
 					if (accountName != null) {
-						SharedPreferences settings =
-								getApplicationContext().getSharedPreferences(PREF_FILE_NAME, Context.MODE_PRIVATE);
-						SharedPreferences.Editor editor = settings.edit();
-						editor.putString(PREF_ACCOUNT_NAME, accountName);
-						editor.apply();
+						AppSharedPreferences.setGoogleAccountName(getApplicationContext(), accountName);
 						mCredential.setSelectedAccountName(accountName);
 						getResultsFromApi();
 					}
@@ -291,10 +285,10 @@ public class GooglePhotosAuthActivity extends Activity
 		protected String doInBackground(Void... params) {
 			String pageToken;
 			try {
-				pageToken = getLastPageToken(getApplicationContext());
+				pageToken = AppSharedPreferences.getLastPageToken(getApplicationContext());
 				pageToken = getDataFromApi(pageToken);
 				while (pageToken != null) {
-					setLastPageToken(getApplicationContext(), pageToken);
+					AppSharedPreferences.setLastPageToken(getApplicationContext(), pageToken);
 					pageToken = getDataFromApi(pageToken);
 				}
 			} catch (Exception e) {
@@ -363,21 +357,5 @@ public class GooglePhotosAuthActivity extends Activity
 		}
 	}
 
-	public static String getGoogleAccountName(Context ctx) {
-		return ctx.getSharedPreferences(PREF_FILE_NAME, Context.MODE_PRIVATE)
-				.getString(PREF_ACCOUNT_NAME, null);
-	}
 
-	public static void setLastPageToken(Context ctx, String pageToken) {
-		SharedPreferences settings =
-				ctx.getApplicationContext().getSharedPreferences(PREF_FILE_NAME, Context.MODE_PRIVATE);
-		SharedPreferences.Editor editor = settings.edit();
-		editor.putString(PREF_PAGE_TOKEN, pageToken);
-		editor.apply();
-	}
-
-	public static String getLastPageToken(Context ctx) {
-		return ctx.getSharedPreferences(PREF_FILE_NAME, Context.MODE_PRIVATE)
-				.getString(PREF_PAGE_TOKEN, null);
-	}
 }

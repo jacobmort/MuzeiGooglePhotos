@@ -12,6 +12,11 @@ import com.google.api.client.util.ExponentialBackOff;
 import java.io.IOException;
 import java.util.Arrays;
 
+import porqueno.muzeigooglephotos.models.AppSharedPreferences;
+import porqueno.muzeigooglephotos.models.PhotoModel;
+import porqueno.muzeigooglephotos.models.PhotosModelDbHelper;
+import porqueno.muzeigooglephotos.util.TimeHelpers;
+
 /**
  * Created by jacob on 6/16/16.
  */
@@ -38,7 +43,7 @@ public class GooglePhotosRemoteMuzeiArtSource extends RemoteMuzeiArtSource {
 				getApplicationContext(), Arrays.asList(GooglePhotosAuthActivity.DRIVE_SCOPES))
 				.setBackOff(new ExponentialBackOff());
 
-		String accountName = GooglePhotosAuthActivity.getGoogleAccountName(getApplicationContext());
+		String accountName = AppSharedPreferences.getGoogleAccountName(getApplicationContext());
 
 		if (accountName != null) {
 			mCredential.setSelectedAccountName(accountName);
@@ -67,12 +72,12 @@ public class GooglePhotosRemoteMuzeiArtSource extends RemoteMuzeiArtSource {
 		PhotoModel photo = pdb.getNextPhoto();
 
 		publishArtwork(new Artwork.Builder()
-				.title("Photo title")
-				.byline("Byline")
+				.title(TimeHelpers.getPrettyDateString(photo.getCreatedTime()))
+				.byline(TimeHelpers.getPrettyTimeString(photo.getCreatedTime()))
 				.imageUri(Uri.parse(photo.getUrl(token)))
-				.token("UNIQUE KEY FOR PHOTO")
+				.token(photo.getId())
 				.viewIntent(new Intent(Intent.ACTION_VIEW,
-						Uri.parse("http://500px.com/photo/162495199")))
+						Uri.parse(photo.getUrl(token))))
 				.build());
 
 		scheduleUpdate(System.currentTimeMillis() + ROTATE_TIME_MILLIS);

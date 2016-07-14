@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.RenamingDelegatingContext;
 
+import com.google.api.client.util.DateTime;
 import com.google.api.services.drive.model.File;
 
 import org.junit.After;
@@ -14,28 +15,35 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+
+import porqueno.muzeigooglephotos.models.PhotoModel;
+import porqueno.muzeigooglephotos.models.PhotosModelContract;
+import porqueno.muzeigooglephotos.models.PhotosModelDbHelper;
 
 import static android.support.test.InstrumentationRegistry.getTargetContext;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertNull;
+import static org.hamcrest.core.AnyOf.anyOf;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
-import static org.hamcrest.core.AnyOf.anyOf;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
-public class PhotosModelDbHelperTest {
+public class PhotosModelDbHelperInstrumentationTest {
 	private PhotosModelDbHelper database;
 
 	private File createPhotoOne() {
 		File photoOne = new File();
 		photoOne.setId("1");
+		photoOne.setCreatedTime(new DateTime(Calendar.getInstance().getTime()));
 		return photoOne;
 	}
 
 	private File createPhotoTwo() {
 		File photoTwo = new File();
 		photoTwo.setId("2");
+		photoTwo.setCreatedTime(new DateTime(Calendar.getInstance().getTime()));
 		return photoTwo;
 	}
 
@@ -130,4 +138,5 @@ public class PhotosModelDbHelperTest {
 		c.close();
 		db.close();
 	}
+
 }

@@ -1,4 +1,4 @@
-package porqueno.muzeigooglephotos;
+package porqueno.muzeigooglephotos.models;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -7,9 +7,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
 
+import com.google.api.client.util.DateTime;
 import com.google.api.services.drive.model.File;
 
 import java.util.List;
+
+import porqueno.muzeigooglephotos.util.TimeHelpers;
 
 /**
  * Created by jacob on 7/10/16.
@@ -45,14 +48,16 @@ public class PhotosModelDbHelper extends SQLiteOpenHelper {
 
 	public void savePhotos(List<File> photos){
 		SQLiteDatabase db = this.getWritableDatabase();
-		String sql = "INSERT OR IGNORE INTO "+ PhotosModelContract.PhotoEntry.TABLE_NAME +" VALUES (?,?);";
+		String sql = "INSERT OR IGNORE INTO "+ PhotosModelContract.PhotoEntry.TABLE_NAME +" VALUES (?,?,?);";
 		SQLiteStatement statement = db.compileStatement(sql);
 		try {
 			db.beginTransaction();
 			for (File photo: photos) {
+				DateTime createdTime = getMetaTimeOrCreatedTime(photo);
 				statement.clearBindings();
 				statement.bindString(1, photo.getId());
 				statement.bindLong(2, 0);
+				statement.bindLong(3, createdTime.getValue());
 				statement.execute();
 			}
 			db.setTransactionSuccessful();
@@ -74,6 +79,7 @@ public class PhotosModelDbHelper extends SQLiteOpenHelper {
 			if (c.moveToFirst()) {
 				photo = new PhotoModel(
 						this.getId(c),
+						this.getCreatedTime(c) ,
 						true
 				);
 				ContentValues values = new ContentValues();
@@ -129,5 +135,25 @@ public class PhotosModelDbHelper extends SQLiteOpenHelper {
 				)
 		);
 		return viewed  == 1;
+	}
+
+	public long getCreatedTime(Cursor c) {
+		long createdTime =
+			c.getLong(
+					c.getColumnIndexOrThrow(
+							PhotosModelContract.PhotoEntry.COLUMN_NAME_CREATED
+					)
+			);
+		return createdTime;
+	}
+
+	public static DateTime getMetaTimeOrCreatedTime(File file) {
+		if (file.getImageMediaMetadata() != null && file.getImageMediaMetadata().getTime() != null) {
+			return new DateTime(
+					TimeHelpers.getDateFromTimeMeta(file.getImageMediaMetadata().getTime())
+			);
+		} else {
+			return file.getCreatedTime();
+		}
 	}
 }
