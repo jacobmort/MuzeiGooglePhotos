@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">MuzeiGooglePhotos</string>
-    <string name="missing_google_services">"This app requires Google Play Services. Please install Google Play Services on your device and relaunch this app.</string>
+    <string name="missing_google_services">This app requires Google Play Services. Please install Google Play Services on your device and relaunch this app.</string>
+    <string name="photo_fetch">Fetching Google Photos ...</string>
 </resources>

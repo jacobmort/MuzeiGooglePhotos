@@ -23,18 +23,16 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecovera
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.client.util.ExponentialBackOff;
 import com.google.api.services.drive.Drive;
-import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
 import porqueno.muzeigooglephotos.models.AppSharedPreferences;
 import porqueno.muzeigooglephotos.models.PhotosModelDbHelper;
+import porqueno.muzeigooglephotos.util.GoogleCredentialHelper;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
@@ -45,10 +43,7 @@ public class GooglePhotosAuthActivity extends Activity
 	static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
 	static final int REQUEST_PERMISSION_GET_ACCOUNTS = 1003;
 
-	public static final String[] DRIVE_SCOPES = { DriveScopes.DRIVE_PHOTOS_READONLY };
-
 	private static final String PHOTO_FIELDS = "files(createdTime,id,imageMediaMetadata/time),nextPageToken";
-	private GoogleAccountCredential mCredential;
 	private ProgressDialog mProgress;
 
 
@@ -60,12 +55,8 @@ public class GooglePhotosAuthActivity extends Activity
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mProgress = new ProgressDialog(this);
-		mProgress.setMessage("Calling Drive API ...");
+		mProgress.setMessage(getApplicationContext().getString(R.string.photo_fetch));
 
-		// Initialize credentials and service object.
-		mCredential = GoogleAccountCredential.usingOAuth2(
-				getApplicationContext(), Arrays.asList(DRIVE_SCOPES))
-				.setBackOff(new ExponentialBackOff());
 		getResultsFromApi();
 	}
 
@@ -79,12 +70,12 @@ public class GooglePhotosAuthActivity extends Activity
 	private void getResultsFromApi() {
 		if (! isGooglePlayServicesAvailable(this)) {
 			acquireGooglePlayServices(this);
-		} else if (mCredential.getSelectedAccountName() == null) {
+		} else if (GoogleCredentialHelper.get(getApplicationContext()).getSelectedAccountName() == null) {
 			chooseAccount();
 		} else if (! isDeviceOnline()) {
 			Toast.makeText(this, "You are offline", Toast.LENGTH_SHORT).show();
 		} else {
-			new MakeRequestTask(mCredential).execute();
+			new MakeRequestTask(GoogleCredentialHelper.get(getApplicationContext())).execute();
 		}
 	}
 
@@ -104,12 +95,12 @@ public class GooglePhotosAuthActivity extends Activity
 				this, Manifest.permission.GET_ACCOUNTS)) {
 			String accountName = AppSharedPreferences.getGoogleAccountName(getApplicationContext());
 			if (accountName != null) {
-				mCredential.setSelectedAccountName(accountName);
+				GoogleCredentialHelper.setAccoutName(accountName);
 				getResultsFromApi();
 			} else {
 				// Start a dialog from which the user can choose an account
 				startActivityForResult(
-						mCredential.newChooseAccountIntent(),
+						GoogleCredentialHelper.get(getApplicationContext()).newChooseAccountIntent(),
 						REQUEST_ACCOUNT_PICKER);
 			}
 		} else {
@@ -151,7 +142,7 @@ public class GooglePhotosAuthActivity extends Activity
 							data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
 					if (accountName != null) {
 						AppSharedPreferences.setGoogleAccountName(getApplicationContext(), accountName);
-						mCredential.setSelectedAccountName(accountName);
+						GoogleCredentialHelper.setAccoutName(accountName);
 						getResultsFromApi();
 					}
 				}
