@@ -10,3 +10,7 @@ Luckily Muzei makes it easy to [build your own wallpaper sources](https://github
 
 Leaned heavily on code from [500px example](https://github.com/romannurik/muzei/tree/master/example-source-500px)
 and [Google sample code](https://developers.google.com/admin-sdk/reseller/v1/quickstart/android)
+
+#### TODO
+Right now it just bulk fetches the photos on initial run, need to schedule update mechanism to run
+every so often.
