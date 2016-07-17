@@ -264,7 +264,7 @@ public class GooglePhotosAuthActivity extends Activity
 			JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
 			mService = new com.google.api.services.drive.Drive.Builder(
 					transport, jsonFactory, credential)
-					.setApplicationName("Drive API Android Quickstart")
+					.setApplicationName("Muzei Google Photos")
 					.build();
 		}
 
@@ -345,7 +345,6 @@ public class GooglePhotosAuthActivity extends Activity
 			} else {
 				Toast.makeText(getApplicationContext(), "Request cancelled.", Toast.LENGTH_SHORT).show();
 			}
-			finish();
 		}
 	}
 
