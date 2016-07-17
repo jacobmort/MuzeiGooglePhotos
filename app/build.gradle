@@ -13,13 +13,20 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
     productFlavors {
         debugModern {
             minSdkVersion 21
+            applicationId 'porqueno.muzeigooglephotos'
+            targetSdkVersion 24
+            versionCode 1
+            versionName '1.0'
+        }
+        releaseFlavor {
+            minSdkVersion 17
             applicationId 'porqueno.muzeigooglephotos'
             targetSdkVersion 24
             versionCode 1
