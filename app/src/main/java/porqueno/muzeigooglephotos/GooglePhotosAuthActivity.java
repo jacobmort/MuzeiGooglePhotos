@@ -323,7 +323,7 @@ public class GooglePhotosAuthActivity extends Activity
 		@Override
 		protected void onPostExecute(String output) {
 			mProgress.dismiss();
-			//finish();
+			finish();
 		}
 
 		@Override
@@ -345,6 +345,7 @@ public class GooglePhotosAuthActivity extends Activity
 			} else {
 				Toast.makeText(getApplicationContext(), "Request cancelled.", Toast.LENGTH_SHORT).show();
 			}
+			finish();
 		}
 	}
 

@@ -19,9 +19,10 @@ import static org.hamcrest.core.Is.is;
 public class TimeHelpersTest {
 	@Test
 	public void getDateFromTimeMeta() throws Exception {
+		//TODO make this not dependent on PDT/PST
 		String metaTime = "2016:07:10 15:48:03";
 		Date metaDate = TimeHelpers.getDateFromTimeMeta(metaTime);
-		assertThat(metaDate.toString(), is("Sun Jan 10 15:48:03 PST 2016"));
+		assertThat(metaDate.toString(), is("Sun Jul 10 15:48:03 PDT 2016"));
 	}
 
 	@Test

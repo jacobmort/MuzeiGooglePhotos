@@ -138,5 +138,4 @@ public class PhotosModelDbHelperInstrumentationTest {
 		c.close();
 		db.close();
 	}
-
 }

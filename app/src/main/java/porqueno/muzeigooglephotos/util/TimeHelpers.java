@@ -23,7 +23,7 @@ public class TimeHelpers {
 		// metaTime ex 2016:07:10 15:48:03 does not include timezone
 		// comes from camera so let's tack on current timezone assuming user wants to see time
 		// that they actually took it regardless of timezone
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy:mm:dd hh:mm:ss", Locale.getDefault());
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy:MM:dd hh:mm:ss", Locale.getDefault());
 		sdf.setTimeZone(TimeZone.getDefault());
 		Date date;
 		try{
