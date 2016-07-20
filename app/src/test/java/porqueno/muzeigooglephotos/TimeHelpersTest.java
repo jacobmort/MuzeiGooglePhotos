@@ -34,8 +34,8 @@ public class TimeHelpersTest {
 
 	@Test
 	public void getPrettyTimeString() {
-		DateTime dt = new DateTime("2016-06-13T04:16:33.000Z");
+		DateTime dt = new DateTime("2016-06-13T04:06:33.000Z");
 		// PST offset
-		Assert.assertThat(TimeHelpers.getPrettyTimeString(dt), is("9:16 PM"));
+		Assert.assertThat(TimeHelpers.getPrettyTimeString(dt), is("9:06 PM"));
 	}
 }

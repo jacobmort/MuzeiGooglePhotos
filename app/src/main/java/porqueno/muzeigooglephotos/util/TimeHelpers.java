@@ -40,7 +40,7 @@ public class TimeHelpers {
 	}
 
 	public static String getPrettyTimeString(DateTime dateTime) {
-		DateFormat formatter = new SimpleDateFormat("h:m a", Locale.US);
+		DateFormat formatter = new SimpleDateFormat("h:mm a", Locale.US);
 		return formatter.format(dateTime.getValue());
 	}
 
