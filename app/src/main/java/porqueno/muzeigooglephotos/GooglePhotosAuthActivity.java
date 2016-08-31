@@ -9,25 +9,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.api.client.extensions.android.http.AndroidHttp;
-import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException;
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
-import com.google.api.client.http.HttpTransport;
-import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 
-import java.io.IOException;
 import java.util.List;
 
 import porqueno.muzeigooglephotos.models.AppSharedPreferences;
@@ -37,7 +29,7 @@ import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
 public class GooglePhotosAuthActivity extends Activity
-		implements EasyPermissions.PermissionCallbacks {
+		implements EasyPermissions.PermissionCallbacks, PhotosReceivedInterface {
 	static final int REQUEST_ACCOUNT_PICKER = 1000;
 	static final int REQUEST_AUTHORIZATION = 1001;
 	static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
@@ -46,11 +38,6 @@ public class GooglePhotosAuthActivity extends Activity
 	private static final String PHOTO_FIELDS = "files(createdTime,id,imageMediaMetadata/time),nextPageToken";
 	private ProgressDialog mProgress;
 
-
-	/**
-	 * Create the main activity.
-	 * @param savedInstanceState previously saved instance data.
-	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -75,7 +62,11 @@ public class GooglePhotosAuthActivity extends Activity
 		} else if (! isDeviceOnline()) {
 			Toast.makeText(this, "You are offline", Toast.LENGTH_SHORT).show();
 		} else {
-			new MakeRequestTask(GoogleCredentialHelper.get(getApplicationContext())).execute();
+			new PhotosFetchAsyncTask(
+					this,
+					GoogleCredentialHelper.get(getApplicationContext()),
+					AppSharedPreferences.getLastPageToken(getApplicationContext())
+			).execute();
 		}
 	}
 
@@ -251,102 +242,155 @@ public class GooglePhotosAuthActivity extends Activity
 		dialog.show();
 	}
 
-	/**
-	 * An asynchronous task that handles the Drive API call.
-	 * Placing the API calls in their own task ensures the UI stays responsive.
-	 */
-	private class MakeRequestTask extends AsyncTask<Void, Void, String> {
-		private com.google.api.services.drive.Drive mService = null;
-		private Exception mLastError = null;
+	public void fetchedPhotos(FileList photos){
+		String pageToken = photos.getNextPageToken();
+		List<File> files = photos.getFiles();
 
-		public MakeRequestTask(GoogleAccountCredential credential) {
-			HttpTransport transport = AndroidHttp.newCompatibleTransport();
-			JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
-			mService = new com.google.api.services.drive.Drive.Builder(
-					transport, jsonFactory, credential)
-					.setApplicationName("Muzei Google Photos")
-					.build();
+		if (pageToken != null) {
+			AppSharedPreferences.setLastPageToken(getApplicationContext(), pageToken);
 		}
-
-		/**
-		 * Background task to call Drive API.
-		 * @param params no parameters needed for this task.
-		 */
-		@Override
-		protected String doInBackground(Void... params) {
-			String pageToken;
-			try {
-				pageToken = AppSharedPreferences.getLastPageToken(getApplicationContext());
-				pageToken = getDataFromApi(pageToken);
-				while (pageToken != null) {
-					AppSharedPreferences.setLastPageToken(getApplicationContext(), pageToken);
-					pageToken = getDataFromApi(pageToken);
-				}
-			} catch (Exception e) {
-				mLastError = e;
-				cancel(true);
-				return null;
-			}
-			return pageToken;
-		}
-
-		/**
-		 * Fetch a list of up to 10 file names and IDs.
-		 * @return List of Strings describing files, or an empty list if no files
-		 *         found.
-		 * @throws IOException
-		 */
-		private String getDataFromApi(String pageToken) throws IOException {
-			Drive.Files.List apiCall = mService.files().list()
-					.setSpaces("photos")
-					.setOrderBy("createdTime")
-					.setFields(PHOTO_FIELDS)
-					.setPageSize(1000);
-			if (pageToken != null) {
-				apiCall.setPageToken(pageToken);
-			}
-			FileList result = apiCall.execute();
-			List<File> files = result.getFiles();
-			if (files != null) {
-				PhotosModelDbHelper pdb = PhotosModelDbHelper.getHelper(getApplicationContext());
-				pdb.savePhotos(files);
-			}
-			return result.getNextPageToken();
-		}
-
-
-		@Override
-		protected void onPreExecute() {
-			mProgress.show();
-		}
-
-		@Override
-		protected void onPostExecute(String output) {
-			mProgress.dismiss();
-			finish();
-		}
-
-		@Override
-		protected void onCancelled() {
-			mProgress.hide();
-			if (mLastError != null) {
-				if (mLastError instanceof GooglePlayServicesAvailabilityIOException) {
-					showGooglePlayServicesAvailabilityErrorDialog(
-							((GooglePlayServicesAvailabilityIOException) mLastError)
-									.getConnectionStatusCode());
-				} else if (mLastError instanceof UserRecoverableAuthIOException) {
-					startActivityForResult(
-							((UserRecoverableAuthIOException) mLastError).getIntent(),
-							GooglePhotosAuthActivity.REQUEST_AUTHORIZATION);
-				} else {
-					Toast.makeText(getApplicationContext(),"The following error occurred:\n"
-							+ mLastError.getMessage(), Toast.LENGTH_SHORT).show();
-				}
-			} else {
-				Toast.makeText(getApplicationContext(), "Request cancelled.", Toast.LENGTH_SHORT).show();
-			}
+		if (files != null) {
+			PhotosModelDbHelper pdb = PhotosModelDbHelper.getHelper(getApplicationContext());
+			pdb.savePhotos(files);
 		}
 	}
+
+	public void doneFetching(){
+//		JobInfo jobInfo = new JobInfo.Builder(PhotosFetchJobService.JOB_ID, new ComponentName(getBaseContext(), PhotosFetchJobService.class))
+//				.setRequiresCharging(true)
+//				.setPersisted(true)
+//				.setPeriodic(PhotosFetchJobService.HOW_FREQ_TO_RUN_MS)
+//				.build();
+//		JobScheduler scheduler = (JobScheduler)getSystemService(Context.JOB_SCHEDULER_SERVICE);
+//		int result = scheduler.schedule(jobInfo);
+//		if (result == JobScheduler.RESULT_SUCCESS) {
+//			Toast.makeText(this, "Job scheduled !", Toast.LENGTH_SHORT).show();
+//		}
+		mProgress.dismiss();
+		finish();
+	}
+
+	public void onCancel(Exception exception){
+		mProgress.hide();
+		if (exception != null) {
+			if (exception instanceof GooglePlayServicesAvailabilityIOException) {
+				showGooglePlayServicesAvailabilityErrorDialog(
+						((GooglePlayServicesAvailabilityIOException) exception)
+								.getConnectionStatusCode());
+			} else if (exception instanceof UserRecoverableAuthIOException) {
+				startActivityForResult(
+						((UserRecoverableAuthIOException) exception).getIntent(),
+						GooglePhotosAuthActivity.REQUEST_AUTHORIZATION);
+			} else {
+				Toast.makeText(getApplicationContext(),"The following error occurred:\n"
+						+ exception.getMessage(), Toast.LENGTH_SHORT).show();
+			}
+		} else {
+			Toast.makeText(getApplicationContext(), "Request cancelled.", Toast.LENGTH_SHORT).show();
+		}
+	}
+
+	public void onStartFetch(){
+		mProgress.show();
+	}
+
+
+//	/**
+//	 * An asynchronous task that handles the Drive API call.
+//	 * Placing the API calls in their own task ensures the UI stays responsive.
+//	 */
+//	private class MakeRequestTask extends AsyncTask<Void, Void, String> {
+//		private com.google.api.services.drive.Drive mService = null;
+//		private Exception mLastError = null;
+//
+//		public MakeRequestTask(GoogleAccountCredential credential) {
+//			HttpTransport transport = AndroidHttp.newCompatibleTransport();
+//			JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
+//			mService = new com.google.api.services.drive.Drive.Builder(
+//					transport, jsonFactory, credential)
+//					.setApplicationName("Muzei Google Photos")
+//					.build();
+//		}
+//
+//		/**
+//		 * Background task to call Drive API.
+//		 * @param params no parameters needed for this task.
+//		 */
+//		@Override
+//		protected String doInBackground(Void... params) {
+//			String pageToken;
+//			try {
+//				pageToken = AppSharedPreferences.getLastPageToken(getApplicationContext());
+//				pageToken = getDataFromApi(pageToken);
+//				while (pageToken != null) {
+//					AppSharedPreferences.setLastPageToken(getApplicationContext(), pageToken);
+//					pageToken = getDataFromApi(pageToken);
+//				}
+//			} catch (Exception e) {
+//				mLastError = e;
+//				cancel(true);
+//				return null;
+//			}
+//			return pageToken;
+//		}
+//
+//		/**
+//		 * Fetch a list of up to 10 file names and IDs.
+//		 * @return List of Strings describing files, or an empty list if no files
+//		 *         found.
+//		 * @throws IOException
+//		 */
+//		private String getDataFromApi(String pageToken) throws IOException {
+//			Drive.Files.List apiCall = mService.files().list()
+//					.setSpaces("photos")
+//					.setOrderBy("createdTime")
+//					.setFields(PHOTO_FIELDS)
+//					.setPageSize(1000);
+//			if (pageToken != null) {
+//				apiCall.setPageToken(pageToken);
+//			}
+//			FileList result = apiCall.execute();
+//			List<File> files = result.getFiles();
+//			if (files != null) {
+//				PhotosModelDbHelper pdb = PhotosModelDbHelper.getHelper(getApplicationContext());
+//				pdb.savePhotos(files);
+//			}
+//			return result.getNextPageToken();
+//		}
+//
+//
+//		@Override
+//		protected void onPreExecute() {
+//			mProgress.show();
+//		}
+//
+//		@Override
+//		protected void onPostExecute(String output) {
+//			mProgress.dismiss();
+//			finish();
+//		}
+//
+//		@Override
+//		protected void onCancelled() {
+//			mProgress.hide();
+//			if (mLastError != null) {
+//				if (mLastError instanceof GooglePlayServicesAvailabilityIOException) {
+//					showGooglePlayServicesAvailabilityErrorDialog(
+//							((GooglePlayServicesAvailabilityIOException) mLastError)
+//									.getConnectionStatusCode());
+//				} else if (mLastError instanceof UserRecoverableAuthIOException) {
+//					startActivityForResult(
+//							((UserRecoverableAuthIOException) mLastError).getIntent(),
+//							GooglePhotosAuthActivity.REQUEST_AUTHORIZATION);
+//				} else {
+//					Toast.makeText(getApplicationContext(),"The following error occurred:\n"
+//							+ mLastError.getMessage(), Toast.LENGTH_SHORT).show();
+//				}
+//			} else {
+//				Toast.makeText(getApplicationContext(), "Request cancelled.", Toast.LENGTH_SHORT).show();
+//			}
+//		}
+//	}
 
 
 }

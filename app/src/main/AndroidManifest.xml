@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:allowBackup="true"
@@ -14,6 +15,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".GooglePhotosAuthActivity" android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"></activity>
+        <activity android:name=".SettingsActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <service android:name=".GooglePhotosRemoteMuzeiArtSource"
                  android:label="@string/service_name"
                  android:description="@string/service_desc"
@@ -22,6 +29,10 @@
                 <action android:name="com.google.android.apps.muzei.api.MuzeiArtSource" />
             </intent-filter>
             <meta-data android:name="color" android:value="#fa0" />
+        </service>
+        <service android:name=".PhotosFetchJobService"
+                 android:permission="android.permission.BIND_JOB_SERVICE"
+            >
         </service>
     </application>
 
