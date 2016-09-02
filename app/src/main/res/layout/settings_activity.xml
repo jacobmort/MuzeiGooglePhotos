@@ -2,6 +2,9 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
     <data>
         <variable name="handlers" type="porqueno.muzeigooglephotos.SettingsActivity"/>
+        <variable
+            name="spinnerAdapter"
+            type="android.widget.ArrayAdapter" />
     </data>
     <LinearLayout
                   android:orientation="vertical"
@@ -10,8 +13,30 @@
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="New Button"
+            android:text="@string/trigger_activity"
             android:id="@+id/button"
             android:onClick="@{handlers::onClickStartSync}"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/refresh"
+            />
+        <android.support.v7.widget.AppCompatSpinner
+            android:id="@+id/spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            apps:adapter="@{spinnerAdapter}">
+        </android.support.v7.widget.AppCompatSpinner>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/hours"
+            />
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/save"
+            android:id="@+id/save_button"
+            android:onClick="@{handlers::onClickUpdateSettings}"/>
     </LinearLayout>
 </layout>

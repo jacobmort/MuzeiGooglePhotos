@@ -20,7 +20,6 @@ import porqueno.muzeigooglephotos.util.TimeHelpers;
  */
 public class GooglePhotosRemoteMuzeiArtSource extends RemoteMuzeiArtSource {
 	private static final String TAG = "GooglePhotosRemoteMuzeiArtSource";
-	private static final int ROTATE_TIME_MILLIS = 2 * 60 * 60 * 1000; // rotate every 2 hours
 	private String token;
 
 	public GooglePhotosRemoteMuzeiArtSource() {
@@ -72,6 +71,11 @@ public class GooglePhotosRemoteMuzeiArtSource extends RemoteMuzeiArtSource {
 						Uri.parse(photo.getUrl(token))))
 				.build());
 
-		scheduleUpdate(System.currentTimeMillis() + ROTATE_TIME_MILLIS);
+		setNextRefresh();
+	}
+
+	private void setNextRefresh(){
+		long refreshMs = AppSharedPreferences.getRefreshDurationMs(getApplicationContext());
+		scheduleUpdate(System.currentTimeMillis() + refreshMs);
 	}
 }

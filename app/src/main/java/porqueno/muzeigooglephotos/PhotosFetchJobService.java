@@ -21,11 +21,13 @@ public class PhotosFetchJobService extends JobService implements PhotosReceivedI
 	static final long HOW_FREQ_TO_RUN_MS = TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS);
 	static final int JOB_ID = 2001;
 	private static final String TAG = "PhotosFetchJobService";
-	PhotosFetchAsyncTask mPhotosFetchAsyncTask;
+	private PhotosFetchAsyncTask mPhotosFetchAsyncTask;
+	private JobParameters mParams;
 
 	@Override
 	public boolean onStartJob(JobParameters params) {
-		Log.i(TAG, "Started PhotosFetchJobService");
+		Log.i(TAG, "onStartJob PhotosFetchJobService");
+		mParams = params;
 		mPhotosFetchAsyncTask = new PhotosFetchAsyncTask(
 				this,
 				GoogleCredentialHelper.get(getApplicationContext()),
@@ -37,11 +39,13 @@ public class PhotosFetchJobService extends JobService implements PhotosReceivedI
 
 	@Override
 	public boolean onStopJob(JobParameters params) {
+		Log.i(TAG, "onStopJob PhotosFetchJobService");
 		mPhotosFetchAsyncTask.cancel(true);
 		return false;
 	}
 
 	public void fetchedPhotos(FileList photos){
+		Log.i(TAG, "fetchedPhotos PhotosFetchJobService");
 		String pageToken = photos.getNextPageToken();
 		List<File> files = photos.getFiles();
 
@@ -55,7 +59,8 @@ public class PhotosFetchJobService extends JobService implements PhotosReceivedI
 	}
 
 	public void doneFetching(){
-		jobFinished(null, false);
+		Log.i(TAG, "doneFetching PhotosFetchJobService");
+		jobFinished(mParams, false);
 	}
 
 	public void onCancel(Exception exception){

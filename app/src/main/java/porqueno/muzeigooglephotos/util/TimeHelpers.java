@@ -13,6 +13,8 @@ import java.util.TimeZone;
  * Created by jacob on 7/13/16.
  */
 public class TimeHelpers {
+	private static final int MS_IN_AN_HOUR = 60 * 60 * 1000;
+
 	public static String getCurrentGMTOffset() {
 		Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"), Locale.getDefault());
 		String   timeZone = new SimpleDateFormat("Z", Locale.getDefault()).format(calendar.getTime());
@@ -42,6 +44,14 @@ public class TimeHelpers {
 	public static String getPrettyTimeString(DateTime dateTime) {
 		DateFormat formatter = new SimpleDateFormat("h:mm a", Locale.US);
 		return formatter.format(dateTime.getValue());
+	}
+
+	public static long getHoursToMs(int hours){
+		return  hours * MS_IN_AN_HOUR;
+	}
+
+	public static int getHoursFromMs(long ms){
+		return Math.round(ms / MS_IN_AN_HOUR);
 	}
 
 }
