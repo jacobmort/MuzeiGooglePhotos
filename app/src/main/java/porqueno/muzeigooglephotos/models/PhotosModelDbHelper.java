@@ -156,4 +156,24 @@ public class PhotosModelDbHelper extends SQLiteOpenHelper {
 			return file.getCreatedTime();
 		}
 	}
+
+	public int getPhotoCount(){
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor c = db.rawQuery("SELECT count(*) FROM " + PhotosModelContract.PhotoEntry.TABLE_NAME, null);
+		c.moveToFirst();
+		int count =  c.getInt(0);
+		c.close();
+		db.close();
+		return count;
+	}
+
+	public int getPhotoSeenCount(){
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor c = db.rawQuery("SELECT count(*) FROM " + PhotosModelContract.PhotoEntry.TABLE_NAME + " WHERE " + PhotosModelContract.PhotoEntry.COLUMN_NAME_PHOTO_USED +"=1", null);
+		c.moveToFirst();
+		int count =  c.getInt(0);
+		c.close();
+		db.close();
+		return count;
+	}
 }

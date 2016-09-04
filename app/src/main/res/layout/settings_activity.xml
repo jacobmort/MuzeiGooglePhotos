@@ -1,40 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:tools="http://schemas.android.com/tools"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        tools:context=".SettingsActivity">
     <data>
         <variable name="handlers" type="porqueno.muzeigooglephotos.SettingsActivity"/>
-        <variable
-            name="spinnerAdapter"
-            type="android.widget.ArrayAdapter" />
+        <variable name="spinnerAdapter" type="android.widget.ArrayAdapter" />
+        <variable name="numTotalPhotos" type="String" />
+        <variable name="numViewedPhotos" type="String" />
     </data>
     <LinearLayout
                   android:orientation="vertical"
                   android:layout_width="match_parent"
-                  android:layout_height="match_parent">
+                  android:layout_height="match_parent"
+                  android:gravity="center"
+        >
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:layout_marginEnd="5dp"
+                android:text="@{numViewedPhotos}"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:text="@string/viewed_photos"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:layout_marginEnd="5dp"
+                android:text="@{numTotalPhotos}"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/total_photos"
+                />
+        </LinearLayout>
         <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/trigger_activity"
-            android:id="@+id/button"
-            android:onClick="@{handlers::onClickStartSync}"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/refresh"
-            />
-        <android.support.v7.widget.AppCompatSpinner
-            android:id="@+id/spinner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            apps:adapter="@{spinnerAdapter}">
-        </android.support.v7.widget.AppCompatSpinner>
-        <TextView
+            android:layout_gravity="center_horizontal"
+            android:text="@string/trigger_activity"
+            android:layout_marginBottom="40dp"
+            android:id="@+id/button"
+            android:onClick="@{handlers::onClickStartSync}"/>
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/hours"
-            />
+            android:gravity="center_horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/refresh"
+                />
+            <android.support.v7.widget.AppCompatSpinner
+                android:id="@+id/spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                apps:adapter="@{spinnerAdapter}">
+            </android.support.v7.widget.AppCompatSpinner>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/hours"
+                />
+        </LinearLayout>
         <Button
-            android:layout_width="match_parent"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
             android:text="@string/save"
             android:id="@+id/save_button"
             android:onClick="@{handlers::onClickUpdateSettings}"/>
