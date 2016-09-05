@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.widget.Toast;
@@ -38,8 +39,8 @@ public class GooglePhotosAuthActivity extends Activity
 	static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
 	static final int REQUEST_PERMISSION_GET_ACCOUNTS = 1003;
 
-	private static final String PHOTO_FIELDS = "files(createdTime,id,imageMediaMetadata/time),nextPageToken";
 	private ProgressDialog mProgress;
+	private static final boolean JOB_SCHEDULER_AVAILABLE = android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +69,8 @@ public class GooglePhotosAuthActivity extends Activity
 			new PhotosFetchAsyncTask(
 					this,
 					GoogleCredentialHelper.get(getApplicationContext()),
-					AppSharedPreferences.getLastPageToken(getApplicationContext())
+					AppSharedPreferences.getLastPageToken(getApplicationContext()),
+					!JOB_SCHEDULER_AVAILABLE
 			).execute();
 		}
 	}
@@ -259,18 +261,18 @@ public class GooglePhotosAuthActivity extends Activity
 	}
 
 	public void doneFetching(){
-		JobInfo jobInfo = new JobInfo.Builder(PhotosFetchJobService.JOB_ID, new ComponentName(getBaseContext(), PhotosFetchJobService.class))
-				.setRequiresCharging(true)
-				.setPersisted(true)
-				.setPeriodic(PhotosFetchJobService.HOW_FREQ_TO_RUN_MS)
-				.setRequiresDeviceIdle(true)
-				.setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
-				.build();
-		JobScheduler scheduler = (JobScheduler)getSystemService(Context.JOB_SCHEDULER_SERVICE);
-		int result = scheduler.schedule(jobInfo);
-		if (result == JobScheduler.RESULT_SUCCESS) {
-			Toast.makeText(this, "Job scheduled !", Toast.LENGTH_SHORT).show();
+		if (JOB_SCHEDULER_AVAILABLE){
+			JobInfo jobInfo = new JobInfo.Builder(PhotosFetchJobService.JOB_ID, new ComponentName(getBaseContext(), PhotosFetchJobService.class))
+					.setRequiresCharging(true)
+					.setPersisted(true)
+					.setPeriodic(PhotosFetchJobService.HOW_FREQ_TO_RUN_MS)
+					.setRequiresDeviceIdle(true)
+					.setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
+					.build();
+			JobScheduler scheduler = (JobScheduler)getSystemService(Context.JOB_SCHEDULER_SERVICE);
+			scheduler.schedule(jobInfo);
 		}
+
 		mProgress.dismiss();
 		finish();
 	}

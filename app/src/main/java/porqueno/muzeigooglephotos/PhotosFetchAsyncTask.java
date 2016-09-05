@@ -20,12 +20,14 @@ public class PhotosFetchAsyncTask extends AsyncTask<Void, FileList, Void> {
 	private static final String PHOTO_FIELDS = "files(createdTime,id,imageMediaMetadata/time),nextPageToken";
 	private PhotosReceivedInterface mPhotosReceivedInterface;
 	private String mStartingPageToken;
+	private boolean mFetchAll = false;
 	private com.google.api.services.drive.Drive mService = null;
 	private Exception mLastError = null;
 
-	public PhotosFetchAsyncTask(Context ctx, GoogleAccountCredential credential, String pageToken) {
+	public PhotosFetchAsyncTask(Context ctx, GoogleAccountCredential credential, String pageToken, boolean fetchAll) {
 		mPhotosReceivedInterface = (PhotosReceivedInterface) ctx;
 		mStartingPageToken = pageToken;
+		mFetchAll = fetchAll;
 		HttpTransport transport = AndroidHttp.newCompatibleTransport();
 		JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
 		mService = new com.google.api.services.drive.Drive.Builder(
@@ -44,7 +46,7 @@ public class PhotosFetchAsyncTask extends AsyncTask<Void, FileList, Void> {
 		FileList result;
 		// If we don't have a starting startingPageToken only run one initial fetch.
 		// PhotosFetchJobService will handle getting the rest
-		boolean runOnce = pageToken == null;
+		boolean runOnce = mFetchAll;
 		try {
 			while ((pageToken != null && !runOnce) || (pageToken == null && runOnce)) {
 				result = getDataFromApi(pageToken);

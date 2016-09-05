@@ -16,7 +16,8 @@
         >
         <activity android:name=".GooglePhotosAuthActivity" android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"></activity>
         <activity android:name=".SettingsActivity"
-                  android:theme="@android:style/Theme.Material.NoActionBar">
+                  android:theme="@android:style/Theme.Material.NoActionBar"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
