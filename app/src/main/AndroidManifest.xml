@@ -30,7 +30,7 @@
                 <action android:name="com.google.android.apps.muzei.api.MuzeiArtSource" />
             </intent-filter>
             <meta-data android:name="color" android:value="#fa0" />
-            <meta-data android:name="settingsActivity" android:value=".SettingsActivity" />
+            <meta-data android:name="settingsActivity" android:value=".activities.SettingsActivity" />
         </service>
         <service android:name=".services.PhotosFetchJobService"
                  android:permission="android.permission.BIND_JOB_SERVICE"

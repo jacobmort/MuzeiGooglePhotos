@@ -78,6 +78,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/refresh"
                 />
+            <!--suppress AndroidUnknownAttribute -->
             <Spinner
                 android:id="@+id/spinner"
                 android:layout_width="wrap_content"
