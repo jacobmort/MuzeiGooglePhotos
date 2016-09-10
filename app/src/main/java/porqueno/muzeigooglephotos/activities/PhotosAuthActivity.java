@@ -2,6 +2,7 @@ package porqueno.muzeigooglephotos.activities;
 
 import android.Manifest;
 import android.accounts.AccountManager;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -34,6 +35,7 @@ import porqueno.muzeigooglephotos.util.PhotosReceivedInterface;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
+@SuppressWarnings("BooleanMethodIsAlwaysInverted")
 public class PhotosAuthActivity extends Activity
 		implements EasyPermissions.PermissionCallbacks, PhotosReceivedInterface {
 	private static final int REQUEST_ACCOUNT_PICKER = 1000;
@@ -208,6 +210,7 @@ public class PhotosAuthActivity extends Activity
 	 * @return true if Google Play Services is available and up to
 	 *     date on this device; false otherwise.
 	 */
+	@SuppressWarnings("BooleanMethodIsAlwaysInverted")
 	public static boolean isGooglePlayServicesAvailable(Context ctx) {
 		GoogleApiAvailability apiAvailability =
 				GoogleApiAvailability.getInstance();
@@ -260,6 +263,7 @@ public class PhotosAuthActivity extends Activity
 		}
 	}
 
+	@SuppressLint("InlinedApi")
 	public void doneFetching(){
 		if (JOB_SCHEDULER_AVAILABLE){
 			PhotosFetchJobService.scheduleJob(

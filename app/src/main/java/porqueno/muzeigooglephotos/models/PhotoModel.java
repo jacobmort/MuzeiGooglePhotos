@@ -5,6 +5,7 @@ import com.google.api.client.util.DateTime;
 /**
  * Created by jacob on 7/10/16.
  */
+@SuppressWarnings({"SameParameterValue", "CanBeFinal"})
 public class PhotoModel {
 	private static final String GOOGLE_PHOTO_URL = "https://www.googleapis.com/drive/v3/files/";
 	private String id;
@@ -29,9 +30,5 @@ public class PhotoModel {
 	}
 	public DateTime getCreatedTime() {
 		return new DateTime(this.createdTime);
-	}
-
-	public long getCreatedTimeEpoch() {
-		return this.createdTime;
 	}
 }

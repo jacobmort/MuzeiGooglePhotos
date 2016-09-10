@@ -71,6 +71,7 @@ public class PhotosModelDbHelper extends SQLiteOpenHelper {
 		return this.getNextPhoto(false);
 	}
 
+	@SuppressWarnings("WeakerAccess")
 	public PhotoModel getNextPhoto(boolean reset) {
 		SQLiteDatabase db = this.getReadableDatabase();
 		PhotoModel photo = null;
