@@ -8,7 +8,8 @@
     <string name="hours">Hours</string>
     <string name="trigger_activity">Update Photos</string>
     <string name="save">Save Settings"</string>
-    <string name="settings_applied">Updated on next background</string>
+    <string name="settings_applied">Updated on the next background</string>
+    <string name="update_freq">automatically updated once a day when on wifi and charging</string>
     <string name="viewed_photos">Photos Viewed of </string>
     <string name="total_photos">Total</string>
 </resources>

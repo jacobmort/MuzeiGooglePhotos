@@ -12,7 +12,7 @@ import java.io.IOException;
 import porqueno.muzeigooglephotos.models.AppSharedPreferences;
 import porqueno.muzeigooglephotos.models.PhotoModel;
 import porqueno.muzeigooglephotos.models.PhotosModelDbHelper;
-import porqueno.muzeigooglephotos.util.GoogleCredentialHelper;
+import porqueno.muzeigooglephotos.util.GoogleCredentialHelpers;
 import porqueno.muzeigooglephotos.util.TimeHelpers;
 
 /**
@@ -37,11 +37,11 @@ public class GooglePhotosRemoteMuzeiArtSource extends RemoteMuzeiArtSource {
 		String accountName = AppSharedPreferences.getGoogleAccountName(getApplicationContext());
 
 		if (accountName != null) {
-			GoogleCredentialHelper.get(getApplicationContext()).setSelectedAccountName(accountName);
+			GoogleCredentialHelpers.get(getApplicationContext()).setSelectedAccountName(accountName);
 		}
 
 		if (!GooglePhotosAuthActivity.isGooglePlayServicesAvailable(getApplicationContext()) ||
-				GoogleCredentialHelper.get(getApplicationContext()).getSelectedAccountName() == null ) {
+				GoogleCredentialHelpers.get(getApplicationContext()).getSelectedAccountName() == null ) {
 			Intent i = new Intent(this, GooglePhotosAuthActivity.class);
 			i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			startActivity(i);
@@ -52,7 +52,7 @@ public class GooglePhotosRemoteMuzeiArtSource extends RemoteMuzeiArtSource {
 
 	private void fetchNewPhoto() {
 		try {
-			token = GoogleCredentialHelper.get(getApplicationContext()).getToken();
+			token = GoogleCredentialHelpers.get(getApplicationContext()).getToken();
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (GoogleAuthException e) {

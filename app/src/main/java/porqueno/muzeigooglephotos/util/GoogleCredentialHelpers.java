@@ -11,7 +11,7 @@ import java.util.Arrays;
 /**
  * Created by jacob on 7/14/16.
  */
-public class GoogleCredentialHelper {
+public class GoogleCredentialHelpers {
 	private static GoogleAccountCredential mCredential;
 	private static final String[] DRIVE_SCOPES = { DriveScopes.DRIVE_PHOTOS_READONLY };
 

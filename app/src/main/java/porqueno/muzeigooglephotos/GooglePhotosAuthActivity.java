@@ -12,7 +12,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.widget.Toast;
@@ -28,7 +27,8 @@ import java.util.List;
 
 import porqueno.muzeigooglephotos.models.AppSharedPreferences;
 import porqueno.muzeigooglephotos.models.PhotosModelDbHelper;
-import porqueno.muzeigooglephotos.util.GoogleCredentialHelper;
+import porqueno.muzeigooglephotos.util.AndroidHelpers;
+import porqueno.muzeigooglephotos.util.GoogleCredentialHelpers;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
@@ -38,9 +38,9 @@ public class GooglePhotosAuthActivity extends Activity
 	static final int REQUEST_AUTHORIZATION = 1001;
 	static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
 	static final int REQUEST_PERMISSION_GET_ACCOUNTS = 1003;
-
+	public static final boolean JOB_SCHEDULER_AVAILABLE = AndroidHelpers.supportsJobScheduler();
 	private ProgressDialog mProgress;
-	private static final boolean JOB_SCHEDULER_AVAILABLE = android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -61,14 +61,14 @@ public class GooglePhotosAuthActivity extends Activity
 	private void getResultsFromApi() {
 		if (! isGooglePlayServicesAvailable(this)) {
 			acquireGooglePlayServices(this);
-		} else if (GoogleCredentialHelper.get(getApplicationContext()).getSelectedAccountName() == null) {
+		} else if (GoogleCredentialHelpers.get(getApplicationContext()).getSelectedAccountName() == null) {
 			chooseAccount();
 		} else if (! isDeviceOnline()) {
 			Toast.makeText(this, "You are offline", Toast.LENGTH_SHORT).show();
 		} else {
 			new PhotosFetchAsyncTask(
 					this,
-					GoogleCredentialHelper.get(getApplicationContext()),
+					GoogleCredentialHelpers.get(getApplicationContext()),
 					AppSharedPreferences.getLastPageToken(getApplicationContext()),
 					!JOB_SCHEDULER_AVAILABLE
 			).execute();
@@ -91,12 +91,12 @@ public class GooglePhotosAuthActivity extends Activity
 				this, Manifest.permission.GET_ACCOUNTS)) {
 			String accountName = AppSharedPreferences.getGoogleAccountName(getApplicationContext());
 			if (accountName != null) {
-				GoogleCredentialHelper.setAccoutName(accountName);
+				GoogleCredentialHelpers.setAccoutName(accountName);
 				getResultsFromApi();
 			} else {
 				// Start a dialog from which the user can choose an account
 				startActivityForResult(
-						GoogleCredentialHelper.get(getApplicationContext()).newChooseAccountIntent(),
+						GoogleCredentialHelpers.get(getApplicationContext()).newChooseAccountIntent(),
 						REQUEST_ACCOUNT_PICKER);
 			}
 		} else {
@@ -138,7 +138,7 @@ public class GooglePhotosAuthActivity extends Activity
 							data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
 					if (accountName != null) {
 						AppSharedPreferences.setGoogleAccountName(getApplicationContext(), accountName);
-						GoogleCredentialHelper.setAccoutName(accountName);
+						GoogleCredentialHelpers.setAccoutName(accountName);
 						getResultsFromApi();
 					}
 				}

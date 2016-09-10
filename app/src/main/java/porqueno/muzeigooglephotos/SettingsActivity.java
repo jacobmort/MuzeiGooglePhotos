@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter;
 import porqueno.muzeigooglephotos.databinding.SettingsActivityBinding;
 import porqueno.muzeigooglephotos.models.AppSharedPreferences;
 import porqueno.muzeigooglephotos.models.PhotosModelDbHelper;
+import porqueno.muzeigooglephotos.util.AndroidHelpers;
 import porqueno.muzeigooglephotos.util.TimeHelpers;
 
 /**
@@ -25,6 +26,7 @@ public class SettingsActivity extends Activity {
 				R.array.hours_array, android.R.layout.simple_spinner_item);
 		mBinding.setSpinnerAdapter(adapter);
 		mBinding.setHandlers(this);
+		mBinding.setJobTextVisible(AndroidHelpers.supportsJobScheduler());
 
 		PhotosModelDbHelper pdb = PhotosModelDbHelper.getHelper(getApplicationContext());
 		mBinding.setNumTotalPhotos(Integer.toString(pdb.getPhotoCount())); //TODO pluralize photos string

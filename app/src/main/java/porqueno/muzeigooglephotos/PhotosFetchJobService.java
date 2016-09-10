@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 
 import porqueno.muzeigooglephotos.models.AppSharedPreferences;
 import porqueno.muzeigooglephotos.models.PhotosModelDbHelper;
-import porqueno.muzeigooglephotos.util.GoogleCredentialHelper;
+import porqueno.muzeigooglephotos.util.GoogleCredentialHelpers;
 
 /**
  * Created by jacob on 8/29/16.
@@ -30,7 +30,7 @@ public class PhotosFetchJobService extends JobService implements PhotosReceivedI
 		mParams = params;
 		mPhotosFetchAsyncTask = new PhotosFetchAsyncTask(
 				this,
-				GoogleCredentialHelper.get(getApplicationContext()),
+				GoogleCredentialHelpers.get(getApplicationContext()),
 				AppSharedPreferences.getLastPageToken(getApplicationContext()),
 				true
 		);
