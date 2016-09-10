@@ -1,13 +1,11 @@
-package porqueno.muzeigooglephotos;
+package porqueno.muzeigooglephotos.activities;
 
 import android.Manifest;
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -25,14 +23,18 @@ import com.google.api.services.drive.model.FileList;
 
 import java.util.List;
 
+import porqueno.muzeigooglephotos.R;
 import porqueno.muzeigooglephotos.models.AppSharedPreferences;
 import porqueno.muzeigooglephotos.models.PhotosModelDbHelper;
+import porqueno.muzeigooglephotos.services.PhotosFetchJobService;
 import porqueno.muzeigooglephotos.util.AndroidHelpers;
 import porqueno.muzeigooglephotos.util.GoogleCredentialHelpers;
+import porqueno.muzeigooglephotos.util.PhotosFetchAsyncTask;
+import porqueno.muzeigooglephotos.util.PhotosReceivedInterface;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
-public class GooglePhotosAuthActivity extends Activity
+public class PhotosAuthActivity extends Activity
 		implements EasyPermissions.PermissionCallbacks, PhotosReceivedInterface {
 	static final int REQUEST_ACCOUNT_PICKER = 1000;
 	static final int REQUEST_AUTHORIZATION = 1001;
@@ -41,13 +43,11 @@ public class GooglePhotosAuthActivity extends Activity
 	public static final boolean JOB_SCHEDULER_AVAILABLE = AndroidHelpers.supportsJobScheduler();
 	private ProgressDialog mProgress;
 
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mProgress = new ProgressDialog(this);
 		mProgress.setMessage(getApplicationContext().getString(R.string.photo_fetch));
-
 		getResultsFromApi();
 	}
 
@@ -91,7 +91,7 @@ public class GooglePhotosAuthActivity extends Activity
 				this, Manifest.permission.GET_ACCOUNTS)) {
 			String accountName = AppSharedPreferences.getGoogleAccountName(getApplicationContext());
 			if (accountName != null) {
-				GoogleCredentialHelpers.setAccoutName(accountName);
+				GoogleCredentialHelpers.setAccountName(accountName);
 				getResultsFromApi();
 			} else {
 				// Start a dialog from which the user can choose an account
@@ -138,7 +138,7 @@ public class GooglePhotosAuthActivity extends Activity
 							data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
 					if (accountName != null) {
 						AppSharedPreferences.setGoogleAccountName(getApplicationContext(), accountName);
-						GoogleCredentialHelpers.setAccoutName(accountName);
+						GoogleCredentialHelpers.setAccountName(accountName);
 						getResultsFromApi();
 					}
 				}
@@ -262,14 +262,10 @@ public class GooglePhotosAuthActivity extends Activity
 
 	public void doneFetching(){
 		if (JOB_SCHEDULER_AVAILABLE){
-			JobInfo jobInfo = new JobInfo.Builder(PhotosFetchJobService.JOB_ID, new ComponentName(getBaseContext(), PhotosFetchJobService.class))
-					.setRequiresCharging(true)
-					.setPersisted(true)
-					.setPeriodic(PhotosFetchJobService.HOW_FREQ_TO_RUN_MS)
-					.setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
-					.build();
-			JobScheduler scheduler = (JobScheduler)getSystemService(Context.JOB_SCHEDULER_SERVICE);
-			scheduler.schedule(jobInfo);
+			PhotosFetchJobService.scheduleJob(
+					getBaseContext(),
+					(JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE)
+			);
 		}
 
 		mProgress.dismiss();
@@ -286,7 +282,7 @@ public class GooglePhotosAuthActivity extends Activity
 			} else if (exception instanceof UserRecoverableAuthIOException) {
 				startActivityForResult(
 						((UserRecoverableAuthIOException) exception).getIntent(),
-						GooglePhotosAuthActivity.REQUEST_AUTHORIZATION);
+						PhotosAuthActivity.REQUEST_AUTHORIZATION);
 			} else {
 				Toast.makeText(getApplicationContext(),"The following error occurred:\n"
 						+ exception.getMessage(), Toast.LENGTH_SHORT).show();

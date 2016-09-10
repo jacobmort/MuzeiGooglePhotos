@@ -1,4 +1,4 @@
-package porqueno.muzeigooglephotos;
+package porqueno.muzeigooglephotos.services;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -9,6 +9,7 @@ import com.google.android.gms.auth.GoogleAuthException;
 
 import java.io.IOException;
 
+import porqueno.muzeigooglephotos.activities.PhotosAuthActivity;
 import porqueno.muzeigooglephotos.models.AppSharedPreferences;
 import porqueno.muzeigooglephotos.models.PhotoModel;
 import porqueno.muzeigooglephotos.models.PhotosModelDbHelper;
@@ -18,11 +19,11 @@ import porqueno.muzeigooglephotos.util.TimeHelpers;
 /**
  * Created by jacob on 6/16/16.
  */
-public class GooglePhotosRemoteMuzeiArtSource extends RemoteMuzeiArtSource {
-	private static final String TAG = "GooglePhotosRemoteMuzeiArtSource";
+public class PhotosRemoteMuzeiArtSource extends RemoteMuzeiArtSource {
+	private static final String TAG = "PhotosRemoteMuzeiArtSource";
 	private String token;
 
-	public GooglePhotosRemoteMuzeiArtSource() {
+	public PhotosRemoteMuzeiArtSource() {
 		super(TAG);
 	}
 
@@ -40,9 +41,9 @@ public class GooglePhotosRemoteMuzeiArtSource extends RemoteMuzeiArtSource {
 			GoogleCredentialHelpers.get(getApplicationContext()).setSelectedAccountName(accountName);
 		}
 
-		if (!GooglePhotosAuthActivity.isGooglePlayServicesAvailable(getApplicationContext()) ||
+		if (!PhotosAuthActivity.isGooglePlayServicesAvailable(getApplicationContext()) ||
 				GoogleCredentialHelpers.get(getApplicationContext()).getSelectedAccountName() == null ) {
-			Intent i = new Intent(this, GooglePhotosAuthActivity.class);
+			Intent i = new Intent(this, PhotosAuthActivity.class);
 			i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			startActivity(i);
 		} else {
@@ -53,11 +54,10 @@ public class GooglePhotosRemoteMuzeiArtSource extends RemoteMuzeiArtSource {
 	private void fetchNewPhoto() {
 		try {
 			token = GoogleCredentialHelpers.get(getApplicationContext()).getToken();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (GoogleAuthException e) {
+		} catch (IOException | GoogleAuthException e) {
 			e.printStackTrace();
 		}
+
 		// Fetch URL from google photos
 		PhotosModelDbHelper pdb = PhotosModelDbHelper.getHelper(getApplicationContext());
 		PhotoModel photo = pdb.getNextPhoto();

@@ -14,15 +14,15 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         >
-        <activity android:name=".GooglePhotosAuthActivity" android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"></activity>
-        <activity android:name=".SettingsActivity"
+        <activity android:name=".activities.PhotosAuthActivity" android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"></activity>
+        <activity android:name=".activities.SettingsActivity"
                   android:theme="@android:style/Theme.Material.NoActionBar"
             >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
-        <service android:name=".GooglePhotosRemoteMuzeiArtSource"
+        <service android:name=".services.PhotosRemoteMuzeiArtSource"
                  android:label="@string/service_name"
                  android:description="@string/service_desc"
                  android:icon="@drawable/google_photo_service">
@@ -32,7 +32,7 @@
             <meta-data android:name="color" android:value="#fa0" />
             <meta-data android:name="settingsActivity" android:value=".SettingsActivity" />
         </service>
-        <service android:name=".PhotosFetchJobService"
+        <service android:name=".services.PhotosFetchJobService"
                  android:permission="android.permission.BIND_JOB_SERVICE"
             >
         </service>

@@ -24,7 +24,7 @@ public class GoogleCredentialHelpers {
 		return mCredential;
 	}
 
-	public static void setAccoutName(String name) {
+	public static void setAccountName(String name) {
 		mCredential.setSelectedAccountName(name);
 	}
 }

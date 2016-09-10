@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:tools="http://schemas.android.com/tools"
         xmlns:android="http://schemas.android.com/apk/res/android"
-        tools:context=".SettingsActivity">
+        tools:context=".activities.SettingsActivity">
     <data>
         <import type="android.view.View"/>
-        <variable name="handlers" type="porqueno.muzeigooglephotos.SettingsActivity"/>
+        <variable name="handlers" type="porqueno.muzeigooglephotos.activities.SettingsActivity"/>
         <variable name="spinnerAdapter" type="android.widget.ArrayAdapter" />
         <variable name="numTotalPhotos" type="String" />
         <variable name="numViewedPhotos" type="String" />

@@ -1,4 +1,4 @@
-package porqueno.muzeigooglephotos;
+package porqueno.muzeigooglephotos.util;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -54,7 +54,7 @@ public class PhotosFetchAsyncTask extends AsyncTask<Void, FileList, Void> {
 				mPhotosReceivedInterface.fetchedPhotos(result);
 				pageToken = result.getNextPageToken();
 			}
-		} catch (Exception e) {
+		} catch (IOException e) {
 			mLastError = e;
 			cancel(true);
 		}
@@ -62,7 +62,7 @@ public class PhotosFetchAsyncTask extends AsyncTask<Void, FileList, Void> {
 	}
 
 	/**
-	 * Fetch a list of up to 10 file names and IDs.
+	 * Fetch a list of up to 1000 file names and IDs.
 	 * @return List of Strings describing files, or an empty list if no files
 	 *         found.
 	 * @throws IOException

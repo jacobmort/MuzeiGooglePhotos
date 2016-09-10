@@ -1,4 +1,4 @@
-package porqueno.muzeigooglephotos;
+package porqueno.muzeigooglephotos.activities;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
 
+import porqueno.muzeigooglephotos.R;
 import porqueno.muzeigooglephotos.databinding.SettingsActivityBinding;
 import porqueno.muzeigooglephotos.models.AppSharedPreferences;
 import porqueno.muzeigooglephotos.models.PhotosModelDbHelper;
@@ -51,7 +52,7 @@ public class SettingsActivity extends Activity {
 	}
 
 	public void onClickStartSync(View view) {
-		Intent i = new Intent(this, GooglePhotosAuthActivity.class);
+		Intent i = new Intent(this, PhotosAuthActivity.class);
 		i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		startActivity(i);
 	}

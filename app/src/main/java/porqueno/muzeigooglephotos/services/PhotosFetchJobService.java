@@ -1,7 +1,12 @@
-package porqueno.muzeigooglephotos;
+package porqueno.muzeigooglephotos.services;
 
+import android.annotation.TargetApi;
+import android.app.job.JobInfo;
 import android.app.job.JobParameters;
+import android.app.job.JobScheduler;
 import android.app.job.JobService;
+import android.content.ComponentName;
+import android.content.Context;
 import android.util.Log;
 
 import com.google.api.services.drive.model.File;
@@ -13,11 +18,15 @@ import java.util.concurrent.TimeUnit;
 import porqueno.muzeigooglephotos.models.AppSharedPreferences;
 import porqueno.muzeigooglephotos.models.PhotosModelDbHelper;
 import porqueno.muzeigooglephotos.util.GoogleCredentialHelpers;
+import porqueno.muzeigooglephotos.util.PhotosFetchAsyncTask;
+import porqueno.muzeigooglephotos.util.PhotosReceivedInterface;
 
 /**
  * Created by jacob on 8/29/16.
  */
-public class PhotosFetchJobService extends JobService implements PhotosReceivedInterface{
+
+@TargetApi(21)
+public class PhotosFetchJobService extends JobService implements PhotosReceivedInterface {
 	static final long HOW_FREQ_TO_RUN_MS = TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS);
 	static final int JOB_ID = 2001;
 	private static final String TAG = "PhotosFetchJobService";
@@ -72,6 +81,16 @@ public class PhotosFetchJobService extends JobService implements PhotosReceivedI
 	}
 
 	public void onStartFetch(){
+	}
+
+	public static void scheduleJob(Context ctx, JobScheduler scheduler){
+		JobInfo jobInfo = new JobInfo.Builder(PhotosFetchJobService.JOB_ID, new ComponentName(ctx, PhotosFetchJobService.class))
+				.setRequiresCharging(true)
+				.setPersisted(true)
+				.setPeriodic(PhotosFetchJobService.HOW_FREQ_TO_RUN_MS)
+				.setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
+				.build();
+		scheduler.schedule(jobInfo);
 	}
 
 }
