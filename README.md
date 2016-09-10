@@ -12,5 +12,4 @@ Leaned heavily on code from [500px example](https://github.com/romannurik/muzei/
 and [Google sample code](https://developers.google.com/admin-sdk/reseller/v1/quickstart/android)
 
 #### TODO
-Right now it just bulk fetches the photos on initial run, need to schedule update mechanism to run
-every so often.
+Let user choose an album in Google Photos to refresh from
