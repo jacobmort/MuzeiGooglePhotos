@@ -57,7 +57,8 @@
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal">
+            android:gravity="center_horizontal"
+            android:layout_marginBottom="20dp">
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -82,5 +83,11 @@
             android:text="@string/save"
             android:id="@+id/save_button"
             android:onClick="@{handlers::onClickUpdateSettings}"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="italic"
+            android:text="@string/settings_applied"
+            />
     </LinearLayout>
 </layout>

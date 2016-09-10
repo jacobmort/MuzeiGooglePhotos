@@ -266,7 +266,6 @@ public class GooglePhotosAuthActivity extends Activity
 					.setRequiresCharging(true)
 					.setPersisted(true)
 					.setPeriodic(PhotosFetchJobService.HOW_FREQ_TO_RUN_MS)
-					.setRequiresDeviceIdle(true)
 					.setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
 					.build();
 			JobScheduler scheduler = (JobScheduler)getSystemService(Context.JOB_SCHEDULER_SERVICE);

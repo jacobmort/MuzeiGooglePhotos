@@ -31,7 +31,8 @@ public class PhotosFetchJobService extends JobService implements PhotosReceivedI
 		mPhotosFetchAsyncTask = new PhotosFetchAsyncTask(
 				this,
 				GoogleCredentialHelper.get(getApplicationContext()),
-				AppSharedPreferences.getLastPageToken(getApplicationContext())
+				AppSharedPreferences.getLastPageToken(getApplicationContext()),
+				true
 		);
 		mPhotosFetchAsyncTask.execute();
 		return true;
