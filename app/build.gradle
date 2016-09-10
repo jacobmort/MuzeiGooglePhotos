@@ -7,7 +7,7 @@ android {
         applicationId "porqueno.muzeigooglephotos"
         minSdkVersion 17
         targetSdkVersion 23
-        versionCode 3
+        versionCode 4
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -22,14 +22,14 @@ android {
             minSdkVersion 17
             applicationId 'porqueno.muzeigooglephotos'
             targetSdkVersion 24
-            versionCode 3
+            versionCode 4
             versionName '1.0'
         }
         releaseFlavor {
             minSdkVersion 17
             applicationId 'porqueno.muzeigooglephotos'
             targetSdkVersion 24
-            versionCode 3
+            versionCode 4
             versionName '1.0'
         }
     }
