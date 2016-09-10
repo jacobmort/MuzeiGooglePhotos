@@ -95,7 +95,7 @@ public class PhotosModelDbHelperInstrumentationTest {
 	}
 
 	@Test
-	public void getNextPhotoEmtpyDB() throws Exception {
+	public void getNextPhotoEmptyDB() throws Exception {
 		PhotoModel emptyPhoto = database.getNextPhoto();
 		assertNull(emptyPhoto);
 	}

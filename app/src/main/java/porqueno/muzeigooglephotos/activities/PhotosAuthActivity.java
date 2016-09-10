@@ -36,11 +36,11 @@ import pub.devrel.easypermissions.EasyPermissions;
 
 public class PhotosAuthActivity extends Activity
 		implements EasyPermissions.PermissionCallbacks, PhotosReceivedInterface {
-	static final int REQUEST_ACCOUNT_PICKER = 1000;
-	static final int REQUEST_AUTHORIZATION = 1001;
-	static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
-	static final int REQUEST_PERMISSION_GET_ACCOUNTS = 1003;
-	public static final boolean JOB_SCHEDULER_AVAILABLE = AndroidHelpers.supportsJobScheduler();
+	private static final int REQUEST_ACCOUNT_PICKER = 1000;
+	private static final int REQUEST_AUTHORIZATION = 1001;
+	private static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
+	private static final int REQUEST_PERMISSION_GET_ACCOUNTS = 1003;
+	private static final boolean JOB_SCHEDULER_AVAILABLE = AndroidHelpers.supportsJobScheduler();
 	private ProgressDialog mProgress;
 
 	@Override
@@ -237,7 +237,7 @@ public class PhotosAuthActivity extends Activity
 	 * @param connectionStatusCode code describing the presence (or lack of)
 	 *     Google Play Services on this device.
 	 */
-	void showGooglePlayServicesAvailabilityErrorDialog(
+	private void showGooglePlayServicesAvailabilityErrorDialog(
 			final int connectionStatusCode) {
 		GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
 		Dialog dialog = apiAvailability.getErrorDialog(

@@ -27,8 +27,8 @@ import porqueno.muzeigooglephotos.util.PhotosReceivedInterface;
 
 @TargetApi(21)
 public class PhotosFetchJobService extends JobService implements PhotosReceivedInterface {
-	static final long HOW_FREQ_TO_RUN_MS = TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS);
-	static final int JOB_ID = 2001;
+	private static final long HOW_FREQ_TO_RUN_MS = TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS);
+	private static final int JOB_ID = 2001;
 	private static final String TAG = "PhotosFetchJobService";
 	private PhotosFetchAsyncTask mPhotosFetchAsyncTask;
 	private JobParameters mParams;

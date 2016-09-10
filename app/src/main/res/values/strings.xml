@@ -3,7 +3,7 @@
     <string name="service_name">Google Photos</string>
     <string name="service_desc">Picks a random photo</string>
     <string name="missing_google_services">This app requires Google Play Services. Please install Google Play Services on your device and relaunch this app.</string>
-    <string name="photo_fetch">Fetching Google Photos ...</string>
+    <string name="photo_fetch">Fetching Google Photos &#8230;</string>
     <string name="refresh">Refresh Every</string>
     <string name="hours">Hours</string>
     <string name="trigger_activity">Update Photos</string>

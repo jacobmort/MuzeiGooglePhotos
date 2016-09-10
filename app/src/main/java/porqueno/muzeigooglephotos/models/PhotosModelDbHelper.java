@@ -18,7 +18,7 @@ import porqueno.muzeigooglephotos.util.TimeHelpers;
  * Created by jacob on 7/10/16.
  */
 public class PhotosModelDbHelper extends SQLiteOpenHelper {
-	public static final int DATABASE_VERSION = 1;
+	private static final int DATABASE_VERSION = 1;
 	public static final String DATABASE_NAME = "Photos.db";
 
 	public PhotosModelDbHelper(Context context) {
@@ -137,14 +137,12 @@ public class PhotosModelDbHelper extends SQLiteOpenHelper {
 		return viewed  == 1;
 	}
 
-	public long getCreatedTime(Cursor c) {
-		long createdTime =
-			c.getLong(
-					c.getColumnIndexOrThrow(
-							PhotosModelContract.PhotoEntry.COLUMN_NAME_CREATED
-					)
-			);
-		return createdTime;
+	private long getCreatedTime(Cursor c) {
+		return c.getLong(
+				c.getColumnIndexOrThrow(
+						PhotosModelContract.PhotoEntry.COLUMN_NAME_CREATED
+				)
+		);
 	}
 
 	public static DateTime getMetaTimeOrCreatedTime(File file) {
