@@ -14,7 +14,7 @@ public class AppSharedPreferences {
 	private static final String PREF_PAGE_TOKEN = "pageToken";
 	private static final String PREF_REFRESH_DURATION = "refreshDuration";
 
-	private static final int DEFAULT_ROTATE_TIME_MILLIS = 2 * 60 * 60 * 1000; // rotate every 2 hours
+	private static final long DEFAULT_ROTATE_TIME_MILLIS = 2 * 60 * 60 * 1000; // rotate every 2 hours
 
 	public static void setGoogleAccountName(Context ctx, String accountName) {
 		SharedPreferences settings =
