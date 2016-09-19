@@ -16,21 +16,21 @@ android {
             minSdkVersion 21
             applicationId 'porqueno.muzeigooglephotos'
             targetSdkVersion 24
-            versionCode 4
+            versionCode 5
             versionName '1.0'
         }
         debugSupport {
             minSdkVersion 17
             applicationId 'porqueno.muzeigooglephotos'
             targetSdkVersion 24
-            versionCode 1
+            versionCode 5
             versionName '1.0'
         }
         releaseFlavor {
             minSdkVersion 17
             applicationId 'porqueno.muzeigooglephotos'
             targetSdkVersion 24
-            versionCode 4
+            versionCode 5
             versionName '1.0'
         }
     }
