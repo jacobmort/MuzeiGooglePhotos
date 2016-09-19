@@ -77,7 +77,7 @@ public class PhotosFetchJobService extends JobService implements PhotosReceivedI
 		if (exception != null) {
 			Log.e(TAG, exception.getMessage());
 		}
-		jobFinished(null, false);
+		jobFinished(mParams, false);
 	}
 
 	public void onStartFetch(){
