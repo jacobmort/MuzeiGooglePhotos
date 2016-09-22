@@ -29,3 +29,4 @@
 -keep class com.google.api.services.drive.** {
 *;
 }
+-keep class porqueno.muzeigooglephotos.activities.SettingsActivity
