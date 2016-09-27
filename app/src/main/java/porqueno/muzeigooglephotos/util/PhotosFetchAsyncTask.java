@@ -17,7 +17,7 @@ import java.io.IOException;
  * Created by jacob on 8/29/16.
  */
 public class PhotosFetchAsyncTask extends AsyncTask<Void, FileList, Void> {
-	private static final String PHOTO_FIELDS = "files(createdTime,id,imageMediaMetadata/time),nextPageToken";
+	private static final String PHOTO_FIELDS = "files(createdTime,id,imageMediaMetadata(location(latitude,longitude),time)),nextPageToken";
 	private PhotosReceivedInterface mPhotosReceivedInterface;
 	private String mStartingPageToken;
 	private boolean mFetchAll = false;
