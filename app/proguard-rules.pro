@@ -23,6 +23,7 @@
 -dontwarn sun.misc.Unsafe
 -dontwarn com.google.common.collect.MinMaxPriorityQueue
 -keepattributes *Annotation*,Signature
+-keepattributes InnerClasses
 -keep class * extends com.google.api.client.json.GenericJson {
 *;
 }
