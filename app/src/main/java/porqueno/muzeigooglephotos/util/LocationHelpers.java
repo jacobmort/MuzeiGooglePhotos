@@ -23,11 +23,32 @@ public class LocationHelpers {
 			List<Address> addresses = geocoder.getFromLocation(lat, lng, 1);
 			if (addresses.size() > 0){
 				Address address = addresses.get(0);
-				return address.getAdminArea() + ',' + address.getCountryName();
+				String adminArea = getBestSpecificArea(address);
+				if (!adminArea.equals("")) {
+					return adminArea + ", " + address.getCountryName();
+				} else {
+					return address.getCountryName();
+				}
 			}
 		} catch (IllegalArgumentException | IOException exception) {
 			Log.e(TAG, exception.toString());
 		}
 		return "";
+	}
+
+	private static String getBestSpecificArea(Address address){
+		if (address.getLocality() != null) {
+			return address.getLocality();
+		} else if (address.getSubAdminArea() != null){
+			return address.getSubAdminArea();
+		} else if (address.getAdminArea() != null){
+			return address.getAdminArea();
+		} else if (address.getThoroughfare() != null){
+			return address.getThoroughfare();
+		} else if (address.getFeatureName() != null){
+			return address.getFeatureName();
+		} else {
+			return "";
+		}
 	}
 }
