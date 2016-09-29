@@ -6,6 +6,7 @@ import android.net.Uri;
 import com.google.android.apps.muzei.api.Artwork;
 import com.google.android.apps.muzei.api.RemoteMuzeiArtSource;
 import com.google.android.gms.auth.GoogleAuthException;
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 
 import java.io.IOException;
 
@@ -36,25 +37,21 @@ public class PhotosRemoteMuzeiArtSource extends RemoteMuzeiArtSource {
 
 	@Override
 	protected void onTryUpdate(int reason) throws RetryException {
-		String accountName = AppSharedPreferences.getGoogleAccountName(getApplicationContext());
-
-		if (accountName != null) {
-			GoogleCredentialHelpers.get(getApplicationContext()).setSelectedAccountName(accountName);
-		}
+		GoogleAccountCredential googleAccountCredential = GoogleCredentialHelpers.get(getApplicationContext());
 
 		if (!PhotosAuthActivity.isGooglePlayServicesAvailable(getApplicationContext()) ||
-				GoogleCredentialHelpers.get(getApplicationContext()).getSelectedAccountName() == null ) {
+				googleAccountCredential.getSelectedAccountName() == null ) {
 			Intent i = new Intent(this, PhotosAuthActivity.class);
 			i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			startActivity(i);
 		} else {
-			fetchNewPhoto();
+			fetchNewPhoto(googleAccountCredential);
 		}
 	}
 
-	private void fetchNewPhoto() {
+	private void fetchNewPhoto(GoogleAccountCredential googleAccountCredential) {
 		try {
-			token = GoogleCredentialHelpers.get(getApplicationContext()).getToken();
+			token = googleAccountCredential.getToken();
 		} catch (IOException | GoogleAuthException e) {
 			e.printStackTrace();
 		}
@@ -62,20 +59,21 @@ public class PhotosRemoteMuzeiArtSource extends RemoteMuzeiArtSource {
 		// Fetch URL from google photos
 		PhotosModelDbHelper pdb = PhotosModelDbHelper.getHelper(getApplicationContext());
 		PhotoModel photo = pdb.getNextPhoto();
+		if (photo != null){
+			publishArtwork(new Artwork.Builder()
+					.title(
+							TimeHelpers.getPrettyDateString(photo.getCreatedTime()) +
+							"\n" +
+							TimeHelpers.getPrettyTimeString(photo.getCreatedTime())
+							)
+					.byline(getByLine(photo))
+					.imageUri(Uri.parse(photo.getUrl(token)))
+					.token(photo.getId())
+					.viewIntent(new Intent(Intent.ACTION_VIEW,
+							Uri.parse(photo.getUrl(token))))
+					.build());
 
-		publishArtwork(new Artwork.Builder()
-				.title(
-						TimeHelpers.getPrettyDateString(photo.getCreatedTime()) +
-						"\n" +
-						TimeHelpers.getPrettyTimeString(photo.getCreatedTime())
-						)
-				.byline(getByLine(photo))
-				.imageUri(Uri.parse(photo.getUrl(token)))
-				.token(photo.getId())
-				.viewIntent(new Intent(Intent.ACTION_VIEW,
-						Uri.parse(photo.getUrl(token))))
-				.build());
-
+		}
 		setNextRefresh();
 	}
 

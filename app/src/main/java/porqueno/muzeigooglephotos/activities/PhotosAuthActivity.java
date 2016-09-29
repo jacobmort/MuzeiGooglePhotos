@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException;
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
 import com.google.api.services.drive.model.File;
@@ -44,12 +45,14 @@ public class PhotosAuthActivity extends Activity
 	private static final int REQUEST_PERMISSION_GET_ACCOUNTS = 1003;
 	private static final boolean JOB_SCHEDULER_AVAILABLE = AndroidHelpers.supportsJobScheduler();
 	private ProgressDialog mProgress;
+	private GoogleAccountCredential mGoogleAccountCredential;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mProgress = new ProgressDialog(this);
 		mProgress.setMessage(getApplicationContext().getString(R.string.photo_fetch));
+		mGoogleAccountCredential = GoogleCredentialHelpers.get(getApplicationContext());
 		getResultsFromApi();
 	}
 
@@ -63,14 +66,14 @@ public class PhotosAuthActivity extends Activity
 	private void getResultsFromApi() {
 		if (! isGooglePlayServicesAvailable(this)) {
 			acquireGooglePlayServices(this);
-		} else if (GoogleCredentialHelpers.get(getApplicationContext()).getSelectedAccountName() == null) {
+		} else if (mGoogleAccountCredential.getSelectedAccountName() == null) {
 			chooseAccount();
 		} else if (! isDeviceOnline()) {
 			Toast.makeText(this, "You are offline", Toast.LENGTH_SHORT).show();
 		} else {
 			new PhotosFetchAsyncTask(
 					this,
-					GoogleCredentialHelpers.get(getApplicationContext()),
+					mGoogleAccountCredential,
 					AppSharedPreferences.getLastPageToken(getApplicationContext()),
 					!JOB_SCHEDULER_AVAILABLE
 			).execute();
@@ -91,14 +94,12 @@ public class PhotosAuthActivity extends Activity
 	private void chooseAccount() {
 		if (EasyPermissions.hasPermissions(
 				this, Manifest.permission.GET_ACCOUNTS)) {
-			String accountName = AppSharedPreferences.getGoogleAccountName(getApplicationContext());
-			if (accountName != null) {
-				GoogleCredentialHelpers.setAccountName(accountName);
+			if (mGoogleAccountCredential.getSelectedAccountName() != null) {
 				getResultsFromApi();
 			} else {
 				// Start a dialog from which the user can choose an account
 				startActivityForResult(
-						GoogleCredentialHelpers.get(getApplicationContext()).newChooseAccountIntent(),
+						mGoogleAccountCredential.newChooseAccountIntent(),
 						REQUEST_ACCOUNT_PICKER);
 			}
 		} else {
@@ -140,7 +141,7 @@ public class PhotosAuthActivity extends Activity
 							data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
 					if (accountName != null) {
 						AppSharedPreferences.setGoogleAccountName(getApplicationContext(), accountName);
-						GoogleCredentialHelpers.setAccountName(accountName);
+						mGoogleAccountCredential.setSelectedAccountName(accountName);
 						getResultsFromApi();
 					}
 				}
