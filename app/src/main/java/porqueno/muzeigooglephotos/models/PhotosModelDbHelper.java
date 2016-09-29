@@ -18,7 +18,8 @@ import porqueno.muzeigooglephotos.util.TimeHelpers;
  * Created by jacob on 7/10/16.
  */
 public class PhotosModelDbHelper extends SQLiteOpenHelper {
-	private static final int DATABASE_VERSION = 1;
+	private static final String TAG = "PhotosModelDbHelper";
+	private static final int DATABASE_VERSION = 2;
 	public static final String DATABASE_NAME = "Photos.db";
 
 	public PhotosModelDbHelper(Context context) {
@@ -39,16 +40,19 @@ public class PhotosModelDbHelper extends SQLiteOpenHelper {
 		db.execSQL(PhotosModelContract.SQL_CREATE_ENTRIES);
 	}
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		db.execSQL(PhotosModelContract.SQL_DELETE_ENTRIES);
-		onCreate(db);
+		if (newVersion == 2){
+			db.execSQL(PhotosModelContract.SQL_ADD_LAT);
+			db.execSQL(PhotosModelContract.SQL_ADD_LNG);
+		}
 	}
 	public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		onUpgrade(db, oldVersion, newVersion);
+		db.execSQL(PhotosModelContract.SQL_DELETE_ENTRIES);
+		onCreate(db);
 	}
 
 	public void savePhotos(List<File> photos){
 		SQLiteDatabase db = this.getWritableDatabase();
-		String sql = "INSERT OR IGNORE INTO "+ PhotosModelContract.PhotoEntry.TABLE_NAME +" VALUES (?,?,?);";
+		String sql = "INSERT OR IGNORE INTO "+ PhotosModelContract.PhotoEntry.TABLE_NAME +" VALUES (?,?,?,?,?);";
 		SQLiteStatement statement = db.compileStatement(sql);
 		try {
 			db.beginTransaction();
@@ -58,6 +62,13 @@ public class PhotosModelDbHelper extends SQLiteOpenHelper {
 				statement.bindString(1, photo.getId());
 				statement.bindLong(2, 0);
 				statement.bindLong(3, createdTime.getValue());
+				if (photo.getImageMediaMetadata() == null || photo.getImageMediaMetadata().getLocation() == null){
+					statement.bindNull(4);
+					statement.bindNull(5);
+				} else {
+					statement.bindDouble(4, photo.getImageMediaMetadata().getLocation().getLatitude());
+					statement.bindDouble(5, photo.getImageMediaMetadata().getLocation().getLongitude());
+				}
 				statement.execute();
 			}
 			db.setTransactionSuccessful();
@@ -80,7 +91,9 @@ public class PhotosModelDbHelper extends SQLiteOpenHelper {
 			if (c.moveToFirst()) {
 				photo = new PhotoModel(
 						this.getId(c),
-						this.getCreatedTime(c) ,
+						this.getCreatedTime(c),
+						this.getLatitude(c),
+						this.getLongitude(c),
 						true
 				);
 				ContentValues values = new ContentValues();
@@ -142,6 +155,22 @@ public class PhotosModelDbHelper extends SQLiteOpenHelper {
 		return c.getLong(
 				c.getColumnIndexOrThrow(
 						PhotosModelContract.PhotoEntry.COLUMN_NAME_CREATED
+				)
+		);
+	}
+
+	public double getLatitude(Cursor c){
+		return c.getDouble(
+				c.getColumnIndexOrThrow(
+						PhotosModelContract.PhotoEntry.COLUMN_NAME_LAT
+				)
+		);
+	}
+
+	public double getLongitude(Cursor c){
+		return c.getDouble(
+				c.getColumnIndexOrThrow(
+						PhotosModelContract.PhotoEntry.COLUMN_NAME_LNG
 				)
 		);
 	}

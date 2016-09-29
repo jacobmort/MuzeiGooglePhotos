@@ -14,6 +14,7 @@ import porqueno.muzeigooglephotos.models.AppSharedPreferences;
 import porqueno.muzeigooglephotos.models.PhotoModel;
 import porqueno.muzeigooglephotos.models.PhotosModelDbHelper;
 import porqueno.muzeigooglephotos.util.GoogleCredentialHelpers;
+import porqueno.muzeigooglephotos.util.LocationHelpers;
 import porqueno.muzeigooglephotos.util.TimeHelpers;
 
 /**
@@ -63,8 +64,12 @@ public class PhotosRemoteMuzeiArtSource extends RemoteMuzeiArtSource {
 		PhotoModel photo = pdb.getNextPhoto();
 
 		publishArtwork(new Artwork.Builder()
-				.title(TimeHelpers.getPrettyDateString(photo.getCreatedTime()))
-				.byline(TimeHelpers.getPrettyTimeString(photo.getCreatedTime()))
+				.title(
+						TimeHelpers.getPrettyDateString(photo.getCreatedTime()) +
+						" " +
+						TimeHelpers.getPrettyTimeString(photo.getCreatedTime())
+						)
+				.byline(getByLine(photo))
 				.imageUri(Uri.parse(photo.getUrl(token)))
 				.token(photo.getId())
 				.viewIntent(new Intent(Intent.ACTION_VIEW,
@@ -77,5 +82,13 @@ public class PhotosRemoteMuzeiArtSource extends RemoteMuzeiArtSource {
 	private void setNextRefresh(){
 		long refreshMs = AppSharedPreferences.getRefreshDurationMs(getApplicationContext());
 		scheduleUpdate(System.currentTimeMillis() + refreshMs);
+	}
+
+	private String getByLine(PhotoModel photo){
+		if (photo.getLatitude() != 0.0 && photo.getLongitude() != 0.0){
+			return LocationHelpers.getLocationString(this, photo.getLatitude(), photo.getLongitude());
+		} else{
+			return "";
+		}
 	}
 }

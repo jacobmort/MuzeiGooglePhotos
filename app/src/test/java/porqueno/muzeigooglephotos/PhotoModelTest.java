@@ -16,7 +16,7 @@ public class PhotoModelTest {
 	@Test
 	public void getCreatedTime() throws Exception {
 		DateTime dt = new DateTime("2016-06-13T04:16:33.000Z");
-		PhotoModel photo = new PhotoModel("", dt, false);
+		PhotoModel photo = new PhotoModel("", dt, 0, 0, false);
 		assertThat(photo.getCreatedTime().getValue(), is(dt.getValue()));
 	}
 }
