@@ -19,7 +19,7 @@ public class PhotosModelContract {
 			public static final String COLUMN_NAME_PHOTO_ID = "photo_id";
 			public static final String COLUMN_NAME_PHOTO_USED = "viewed";
 			public static final String COLUMN_NAME_CREATED = "photo_created_at";
-			public static final String COLUMN_NAME_LAT = "photo_latutide";
+			public static final String COLUMN_NAME_LAT = "photo_latitude";
 			public static final String COLUMN_NAME_LNG = "photo_longitude";
 		}
 
@@ -27,8 +27,8 @@ public class PhotosModelContract {
 			"CREATE TABLE " + PhotoEntry.TABLE_NAME + " (" +
 					PhotoEntry.COLUMN_NAME_PHOTO_ID + " TEXT PRIMARY KEY," +
 					PhotosModelContract.PhotoEntry.COLUMN_NAME_PHOTO_USED + " INTEGER DEFAULT 0," +
-					PhotoEntry.COLUMN_NAME_CREATED + " LONG" +
-					COLUMN_NAME_LAT + " DOUBLE" +
+					PhotoEntry.COLUMN_NAME_CREATED + " LONG," +
+					COLUMN_NAME_LAT + " DOUBLE," +
 					COLUMN_NAME_LNG + " DOUBLE" +
 			" )";
 

@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
-import android.util.Log;
 
 import com.google.api.client.util.DateTime;
 import com.google.api.services.drive.model.File;
@@ -20,7 +19,7 @@ import porqueno.muzeigooglephotos.util.TimeHelpers;
  */
 public class PhotosModelDbHelper extends SQLiteOpenHelper {
 	private static final String TAG = "PhotosModelDbHelper";
-	private static final int DATABASE_VERSION = 504;
+	private static final int DATABASE_VERSION = 2;
 	public static final String DATABASE_NAME = "Photos.db";
 
 	public PhotosModelDbHelper(Context context) {
@@ -38,12 +37,10 @@ public class PhotosModelDbHelper extends SQLiteOpenHelper {
 	}
 
 	public void onCreate(SQLiteDatabase db) {
-		Log.i(TAG, "onCreate");
 		db.execSQL(PhotosModelContract.SQL_CREATE_ENTRIES);
 	}
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		Log.i(TAG, "onUpgrade");
-		if (true || newVersion == 2){
+		if (newVersion == 2){
 			db.execSQL(PhotosModelContract.SQL_ADD_LAT);
 			db.execSQL(PhotosModelContract.SQL_ADD_LNG);
 		}
@@ -55,7 +52,6 @@ public class PhotosModelDbHelper extends SQLiteOpenHelper {
 
 	public void savePhotos(List<File> photos){
 		SQLiteDatabase db = this.getWritableDatabase();
-		Log.i(TAG, "version:" + db.getVersion());
 		String sql = "INSERT OR IGNORE INTO "+ PhotosModelContract.PhotoEntry.TABLE_NAME +" VALUES (?,?,?,?,?);";
 		SQLiteStatement statement = db.compileStatement(sql);
 		try {
