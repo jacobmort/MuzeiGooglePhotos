@@ -66,7 +66,7 @@ public class PhotosRemoteMuzeiArtSource extends RemoteMuzeiArtSource {
 		publishArtwork(new Artwork.Builder()
 				.title(
 						TimeHelpers.getPrettyDateString(photo.getCreatedTime()) +
-						" " +
+						"\n" +
 						TimeHelpers.getPrettyTimeString(photo.getCreatedTime())
 						)
 				.byline(getByLine(photo))
