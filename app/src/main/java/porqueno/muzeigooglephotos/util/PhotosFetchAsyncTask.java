@@ -72,6 +72,7 @@ public class PhotosFetchAsyncTask extends AsyncTask<Void, FileList, Void> {
 				.setSpaces("photos")
 				.setOrderBy("createdTime")
 				.setFields(PHOTO_FIELDS)
+				.setQ("mimeType contains 'image/'")
 				.setPageSize(1000);
 		if (pageToken != null) {
 			apiCall.setPageToken(pageToken);
