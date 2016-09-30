@@ -44,11 +44,11 @@ public class PhotosFetchAsyncTask extends AsyncTask<Void, FileList, Void> {
 	protected Void doInBackground(Void... params) {
 		String pageToken = mStartingPageToken;
 		FileList result;
-		// If we don't have a starting startingPageToken run at least once
-		// Then check if we want to continue fetching (mFetchAll) or let PhotosFetchJobService handle it
+		// No startingPageToken- run at least once
+		// startingPageToken- run at least once then continue on mFetchAll
 		boolean ranOnce = false;
 		try {
-			while ((pageToken != null && mFetchAll) || (pageToken == null && !ranOnce)) {
+			while ((pageToken != null && (mFetchAll || !ranOnce)) || (pageToken == null && !ranOnce)) {
 				ranOnce = true;
 				result = getDataFromApi(pageToken);
 				mPhotosReceivedInterface.fetchedPhotos(result);
