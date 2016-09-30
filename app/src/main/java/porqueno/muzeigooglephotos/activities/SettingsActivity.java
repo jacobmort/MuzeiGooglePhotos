@@ -36,6 +36,7 @@ public class SettingsActivity extends Activity {
 		setSpinnerValue(TimeHelpers.getHoursFromMs(msRefresh));
 	}
 
+	@SuppressWarnings("unchecked")
 	private void setSpinnerValue(int hours) {
 		int hoursIndex = mBinding.getSpinnerAdapter().getPosition(
 				Integer.toString(hours)

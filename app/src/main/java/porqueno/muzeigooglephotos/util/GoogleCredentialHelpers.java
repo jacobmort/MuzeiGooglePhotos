@@ -14,7 +14,6 @@ import porqueno.muzeigooglephotos.models.AppSharedPreferences;
  * Created by jacob on 7/14/16.
  */
 public class GoogleCredentialHelpers {
-	private GoogleAccountCredential mCredential;
 	private static final String[] DRIVE_SCOPES = { DriveScopes.DRIVE_PHOTOS_READONLY };
 
 	public static GoogleAccountCredential get(Context ctx){
