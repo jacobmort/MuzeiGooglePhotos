@@ -2,13 +2,13 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 24
-    buildToolsVersion '24.0.2'
+    buildToolsVersion '24.0.3'
     defaultConfig {
         applicationId "porqueno.muzeigooglephotos"
         minSdkVersion 17
         targetSdkVersion 24
-        versionCode 9
-        versionName "1.2"
+        versionCode 10
+        versionName "1.2.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     productFlavors {
@@ -16,22 +16,22 @@ android {
             minSdkVersion 21
             applicationId 'porqueno.muzeigooglephotos'
             targetSdkVersion 24
-            versionCode 9
-            versionName '1.2'
+            versionCode 10
+            versionName '1.2.1'
         }
         debugSupport {
             minSdkVersion 17
             applicationId 'porqueno.muzeigooglephotos'
             targetSdkVersion 24
-            versionCode 9
-            versionName '1.2'
+            versionCode 10
+            versionName '1.2.1'
         }
         releaseFlavor {
             minSdkVersion 17
             applicationId 'porqueno.muzeigooglephotos'
             targetSdkVersion 24
-            versionCode 9
-            versionName '1.2'
+            versionCode 10
+            versionName '1.2.1'
         }
     }
     dataBinding {

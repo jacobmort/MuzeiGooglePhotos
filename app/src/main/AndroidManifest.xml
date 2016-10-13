@@ -15,7 +15,7 @@
         android:supportsRtl="true"
         android:fullBackupContent="@xml/backupscheme"
         >
-        <activity android:name=".activities.PhotosAuthActivity" android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" />
+        <activity android:name=".activities.PhotosAuthActivity" android:theme="@android:style/Theme.Material.NoActionBar" />
         <activity android:name=".activities.SettingsActivity"
                   android:theme="@android:style/Theme.Material.NoActionBar"
             >
