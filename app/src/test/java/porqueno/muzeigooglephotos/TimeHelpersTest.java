@@ -1,17 +1,12 @@
 package porqueno.muzeigooglephotos;
 
-import com.google.api.client.util.DateTime;
-
-import org.junit.Assert;
 import org.junit.Test;
-
-import java.util.Date;
+import org.threeten.bp.LocalDateTime;
 
 import porqueno.muzeigooglephotos.util.TimeHelpers;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-
 
 /**
  * Created by jacob on 7/13/16.
@@ -19,23 +14,20 @@ import static org.hamcrest.core.Is.is;
 public class TimeHelpersTest {
 	@Test
 	public void getDateFromTimeMeta() throws Exception {
-		//TODO make this not dependent on PDT/PST
 		String metaTime = "2016:07:10 15:48:03";
-		Date metaDate = TimeHelpers.getDateFromTimeMeta(metaTime);
-		assertThat(metaDate.toString(), is("Sun Jul 10 15:48:03 PDT 2016"));
+		LocalDateTime metaDate = TimeHelpers.getLocalDateFromTimeMeta(metaTime);;
+		assertThat(metaDate.toString(), is("2016-07-10T15:48:03"));
 	}
 
 	@Test
 	public void getPrettyDateString() {
-		DateTime dt = new DateTime("2016-06-13T04:16:33.000Z");
-		// PST offset
-		Assert.assertThat(TimeHelpers.getPrettyDateString(dt), is("Sun 12 Jun, 2016"));
+		LocalDateTime dt = LocalDateTime.of(2016, 6, 13, 4, 16, 33);
+		assertThat(TimeHelpers.getPrettyDateString(dt), is("Sun 12 Jun, 2016"));
 	}
 
 	@Test
 	public void getPrettyTimeString() {
-		DateTime dt = new DateTime("2016-06-13T04:06:33.000Z");
-		// PST offset
-		Assert.assertThat(TimeHelpers.getPrettyTimeString(dt), is("9:06 PM"));
+		LocalDateTime dt = LocalDateTime.of(2016, 6, 13, 4, 16, 33);
+		assertThat(TimeHelpers.getPrettyTimeString(dt), is("9:06 PM"));
 	}
 }

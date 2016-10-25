@@ -1,6 +1,10 @@
 package porqueno.muzeigooglephotos.models;
 
-import com.google.api.client.util.DateTime;
+import org.threeten.bp.Instant;
+import org.threeten.bp.LocalDateTime;
+import org.threeten.bp.ZoneId;
+
+import porqueno.muzeigooglephotos.util.TimeHelpers;
 
 /**
  * Created by jacob on 7/10/16.
@@ -14,9 +18,9 @@ public class PhotoModel {
 	private double latitude;
 	private double longitude;
 
-	public PhotoModel(String id, DateTime createdTime, double lat, double lng, boolean viewed) {
+	public PhotoModel(String id, LocalDateTime createdTime, double lat, double lng, boolean viewed) {
 		this.id = id;
-		this.createdTime = createdTime.getValue();
+		this.createdTime = TimeHelpers.getEpoch(createdTime);
 		this.viewed = viewed;
 		this.latitude = lat;
 		this.longitude = lng;
@@ -35,8 +39,8 @@ public class PhotoModel {
 	public String getUrl(String token) {
 		return GOOGLE_PHOTO_URL + this.id + "?alt=media&access_token=" + token;
 	}
-	public DateTime getCreatedTime() {
-		return new DateTime(this.createdTime);
+	public LocalDateTime getCreatedTime() {
+		return LocalDateTime.ofInstant(Instant.ofEpochMilli(this.createdTime), ZoneId.systemDefault());
 	}
 
 	public double getLatitude() { return latitude; }

@@ -7,8 +7,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
 
-import com.google.api.client.util.DateTime;
 import com.google.api.services.drive.model.File;
+
+import org.threeten.bp.LocalDateTime;
 
 import java.util.List;
 
@@ -57,11 +58,11 @@ public class PhotosModelDbHelper extends SQLiteOpenHelper {
 		try {
 			db.beginTransaction();
 			for (File photo: photos) {
-				DateTime createdTime = getMetaTimeOrCreatedTime(photo);
+				LocalDateTime createdTime = getMetaTimeOrCreatedTime(photo);
 				statement.clearBindings();
 				statement.bindString(1, photo.getId());
 				statement.bindLong(2, 0);
-				statement.bindLong(3, createdTime.getValue());
+				statement.bindLong(3, TimeHelpers.getEpoch(createdTime));
 				if (photo.getImageMediaMetadata() == null || photo.getImageMediaMetadata().getLocation() == null){
 					statement.bindNull(4);
 					statement.bindNull(5);
@@ -175,13 +176,11 @@ public class PhotosModelDbHelper extends SQLiteOpenHelper {
 		);
 	}
 
-	public static DateTime getMetaTimeOrCreatedTime(File file) {
+	public static LocalDateTime getMetaTimeOrCreatedTime(File file) {
 		if (file.getImageMediaMetadata() != null && file.getImageMediaMetadata().getTime() != null) {
-			return new DateTime(
-					TimeHelpers.getDateFromTimeMeta(file.getImageMediaMetadata().getTime())
-			);
+			return TimeHelpers.getLocalDateFromTimeMeta(file.getImageMediaMetadata().getTime());
 		} else {
-			return file.getCreatedTime();
+			return TimeHelpers.convertFromDateTime(file.getCreatedTime());
 		}
 	}
 

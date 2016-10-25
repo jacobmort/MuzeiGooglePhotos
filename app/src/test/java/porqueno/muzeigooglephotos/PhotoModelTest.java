@@ -1,8 +1,7 @@
 package porqueno.muzeigooglephotos;
 
-import com.google.api.client.util.DateTime;
-
 import org.junit.Test;
+import org.threeten.bp.LocalDateTime;
 
 import porqueno.muzeigooglephotos.models.PhotoModel;
 
@@ -15,8 +14,11 @@ import static org.hamcrest.core.Is.is;
 public class PhotoModelTest {
 	@Test
 	public void getCreatedTime() throws Exception {
-		DateTime dt = new DateTime("2016-06-13T04:16:33.000Z");
+		LocalDateTime dt = LocalDateTime.of(2016,6,13,4,16,33);
 		PhotoModel photo = new PhotoModel("", dt, 0, 0, false);
-		assertThat(photo.getCreatedTime().getValue(), is(dt.getValue()));
+		assertThat(
+				photo.getCreatedTime().toString(),
+				is(dt.toString())
+		);
 	}
 }
