@@ -62,7 +62,7 @@ public class PhotosModelDbHelper extends SQLiteOpenHelper {
 				statement.clearBindings();
 				statement.bindString(1, photo.getId());
 				statement.bindLong(2, 0);
-				statement.bindLong(3, TimeHelpers.getEpoch(createdTime));
+				statement.bindLong(3, TimeHelpers.getEpochMs(createdTime));
 				if (photo.getImageMediaMetadata() == null || photo.getImageMediaMetadata().getLocation() == null){
 					statement.bindNull(4);
 					statement.bindNull(5);
@@ -180,7 +180,7 @@ public class PhotosModelDbHelper extends SQLiteOpenHelper {
 		if (file.getImageMediaMetadata() != null && file.getImageMediaMetadata().getTime() != null) {
 			return TimeHelpers.getLocalDateFromTimeMeta(file.getImageMediaMetadata().getTime());
 		} else {
-			return TimeHelpers.convertFromDateTime(file.getCreatedTime());
+			return TimeHelpers.convertFromDateTimeZulu(file.getCreatedTime());
 		}
 	}
 

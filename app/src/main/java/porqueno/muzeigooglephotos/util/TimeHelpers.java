@@ -39,6 +39,12 @@ public class TimeHelpers {
 		return date;
 	}
 
+	public static LocalDateTime convertFromDateTimeZulu(DateTime dateTime) {
+		DateFormat formatter = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss", Locale.US);
+		formatter.setTimeZone(TimeZone.getTimeZone("Zulu"));
+		return getLocalDateFromTimeMeta(formatter.format(dateTime.getValue()));
+	}
+
 	public static String getPrettyDateString(LocalDateTime dateTime) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE d LLL, yyyy", Locale.US);
 		return formatter.format(dateTime);
@@ -57,12 +63,7 @@ public class TimeHelpers {
 		return Math.round(ms / MS_IN_AN_HOUR);
 	}
 
-	public static LocalDateTime convertFromDateTime(DateTime dateTime) {
-		DateFormat formatter = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss", Locale.US);
-		return getLocalDateFromTimeMeta(formatter.format(dateTime.getValue()));
-	}
-
-	public static long getEpoch(LocalDateTime dt){
+	public static long getEpochMs(LocalDateTime dt){
 		return dt.atZone(ZoneId.systemDefault()).toEpochSecond() * 1000;
 	}
 }

@@ -23,7 +23,7 @@ public class PhotosModelDbHelperTest {
 		img.setTime("2004:03:29 11:13:48");
 		file.setImageMediaMetadata(img);
 
-		// Should ignore createdTime
+		// Should ignore this createdTime
 		long epochTime = 1279317788000L; // Fri, 16 Jul 2010 22:03:08 GMT;
 		DateTime date = new DateTime(epochTime);
 		file.setCreatedTime(date);
@@ -40,6 +40,6 @@ public class PhotosModelDbHelperTest {
 		file.setCreatedTime(date);
 
 		LocalDateTime parsedDate = PhotosModelDbHelper.getMetaTimeOrCreatedTime(file);
-		assertThat(date.getValue(), is(parsedDate.atZone(ZoneId.systemDefault()).toEpochSecond() * 1000));
+		assertThat(epochTime, is(parsedDate.atZone(ZoneId.of("GMT")).toEpochSecond() * 1000));
 	}
 }

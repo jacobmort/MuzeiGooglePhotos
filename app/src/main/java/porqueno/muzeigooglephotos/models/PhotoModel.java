@@ -20,7 +20,7 @@ public class PhotoModel {
 
 	public PhotoModel(String id, LocalDateTime createdTime, double lat, double lng, boolean viewed) {
 		this.id = id;
-		this.createdTime = TimeHelpers.getEpoch(createdTime);
+		this.createdTime = TimeHelpers.getEpochMs(createdTime);
 		this.viewed = viewed;
 		this.latitude = lat;
 		this.longitude = lng;

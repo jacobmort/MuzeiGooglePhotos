@@ -1,5 +1,7 @@
 package porqueno.muzeigooglephotos;
 
+import com.google.api.client.util.DateTime;
+
 import org.junit.Test;
 import org.threeten.bp.LocalDateTime;
 
@@ -20,14 +22,22 @@ public class TimeHelpersTest {
 	}
 
 	@Test
+	public void convertFromZuluDateTime(){
+		long epochTime = 1279317788000L; // Fri, 16 Jul 2010 22:03:08 GMT;
+		DateTime date = new DateTime(epochTime);
+		LocalDateTime dt = TimeHelpers.convertFromDateTimeZulu(date);
+		assertThat(dt.toString(), is("2010-07-16T22:03:08"));
+	}
+
+	@Test
 	public void getPrettyDateString() {
 		LocalDateTime dt = LocalDateTime.of(2016, 6, 13, 4, 16, 33);
-		assertThat(TimeHelpers.getPrettyDateString(dt), is("Sun 12 Jun, 2016"));
+		assertThat(TimeHelpers.getPrettyDateString(dt), is("Mon 13 Jun, 2016"));
 	}
 
 	@Test
 	public void getPrettyTimeString() {
-		LocalDateTime dt = LocalDateTime.of(2016, 6, 13, 4, 16, 33);
-		assertThat(TimeHelpers.getPrettyTimeString(dt), is("9:06 PM"));
+		LocalDateTime dt = LocalDateTime.of(2016, 6, 13, 12, 16, 33);
+		assertThat(TimeHelpers.getPrettyTimeString(dt), is("12:16 PM"));
 	}
 }
