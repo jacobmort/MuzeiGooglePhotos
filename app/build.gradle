@@ -24,14 +24,14 @@ android {
             applicationId 'porqueno.muzeigooglephotos'
             targetSdkVersion 25
             versionCode 11
-            versionName '1.2.1'
+            versionName '1.2.2'
         }
         releaseFlavor {
             minSdkVersion 17
             applicationId 'porqueno.muzeigooglephotos'
             targetSdkVersion 25
             versionCode 11
-            versionName '1.2.1'
+            versionName '1.2.2'
         }
     }
     dataBinding {
