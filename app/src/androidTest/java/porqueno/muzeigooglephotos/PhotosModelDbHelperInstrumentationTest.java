@@ -34,7 +34,7 @@ import static org.junit.Assert.assertTrue;
 @RunWith(AndroidJUnit4.class)
 public class PhotosModelDbHelperInstrumentationTest {
 	private PhotosModelDbHelper mDatabaseHelper;
-	RenamingDelegatingContext mRenamingDelegatingContext;
+	private RenamingDelegatingContext mRenamingDelegatingContext;
 
 	private File.ImageMediaMetadata getMetaForGeo(Double lat, Double lng){
 		File.ImageMediaMetadata meta = new File.ImageMediaMetadata();

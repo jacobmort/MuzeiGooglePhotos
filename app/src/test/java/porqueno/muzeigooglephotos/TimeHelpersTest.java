@@ -17,7 +17,7 @@ public class TimeHelpersTest {
 	@Test
 	public void getDateFromTimeMeta() throws Exception {
 		String metaTime = "2016:07:10 15:48:03";
-		LocalDateTime metaDate = TimeHelpers.getLocalDateFromTimeMeta(metaTime);;
+		LocalDateTime metaDate = TimeHelpers.getLocalDateFromTimeMeta(metaTime);
 		assertThat(metaDate.toString(), is("2016-07-10T15:48:03"));
 	}
 

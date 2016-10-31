@@ -10,9 +10,9 @@ import porqueno.muzeigooglephotos.models.PhotosModelContract;
  * Created by jacob on 9/28/16.
  */
 
-public class PhotosModelDbHelperV1 extends SQLiteOpenHelper {
+class PhotosModelDbHelperV1 extends SQLiteOpenHelper {
 	private static final int DATABASE_VERSION = 1;
-	public static final String DATABASE_NAME = "Photos.db";
+	private static final String DATABASE_NAME = "Photos.db";
 
 	public PhotosModelDbHelperV1(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);

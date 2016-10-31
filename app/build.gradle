@@ -1,36 +1,36 @@
 apply plugin: 'com.android.application'
-
+//noinspection GroovyMissingReturnStatement
 android {
-    compileSdkVersion 24
+    compileSdkVersion 25
     buildToolsVersion '24.0.3'
     defaultConfig {
         applicationId "porqueno.muzeigooglephotos"
         minSdkVersion 17
-        targetSdkVersion 24
-        versionCode 10
-        versionName "1.2.1"
+        targetSdkVersion 25
+        versionCode 11
+        versionName "1.2.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     productFlavors {
         debugModern {
             minSdkVersion 21
             applicationId 'porqueno.muzeigooglephotos'
-            targetSdkVersion 24
-            versionCode 10
-            versionName '1.2.1'
+            targetSdkVersion 25
+            versionCode 11
+            versionName '1.2.2'
         }
         debugSupport {
             minSdkVersion 17
             applicationId 'porqueno.muzeigooglephotos'
-            targetSdkVersion 24
-            versionCode 10
+            targetSdkVersion 25
+            versionCode 11
             versionName '1.2.1'
         }
         releaseFlavor {
             minSdkVersion 17
             applicationId 'porqueno.muzeigooglephotos'
-            targetSdkVersion 24
-            versionCode 10
+            targetSdkVersion 25
+            versionCode 11
             versionName '1.2.1'
         }
     }

@@ -9,7 +9,6 @@ import com.jakewharton.threetenabp.AndroidThreeTen;
  */
 
 public class MuzeiGooglePhotos extends Application {
-
 	@Override
 	public void onCreate() {
 		super.onCreate();
