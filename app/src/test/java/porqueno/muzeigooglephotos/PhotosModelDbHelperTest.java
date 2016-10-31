@@ -4,6 +4,8 @@ import com.google.api.client.util.DateTime;
 import com.google.api.services.drive.model.File;
 
 import org.junit.Test;
+import org.threeten.bp.LocalDateTime;
+import org.threeten.bp.ZoneId;
 
 import porqueno.muzeigooglephotos.models.PhotosModelDbHelper;
 
@@ -21,23 +23,23 @@ public class PhotosModelDbHelperTest {
 		img.setTime("2004:03:29 11:13:48");
 		file.setImageMediaMetadata(img);
 
-		// Should ignore createdTime
-		int epochTime = 1279317788; // Fri, 16 Jul 2010 22:03:08 GMT;
+		// Should ignore this createdTime
+		long epochTime = 1279317788000L; // Fri, 16 Jul 2010 22:03:08 GMT;
 		DateTime date = new DateTime(epochTime);
 		file.setCreatedTime(date);
 
-		DateTime parsedDate = PhotosModelDbHelper.getMetaTimeOrCreatedTime(file);
-		assertThat(parsedDate.toString(), is("2004-03-29T11:13:48.000-08:00"));
+		LocalDateTime parsedDate = PhotosModelDbHelper.getMetaTimeOrCreatedTime(file);
+		assertThat(parsedDate.toString(), is("2004-03-29T11:13:48"));
 	}
 
 	@Test
 	public void getMetaTimeOrCreatedTimeCreated() throws Exception {
 		File file = new File();
-		int epochTime = 1279317788; // Fri, 16 Jul 2010 22:03:08 GMT;
+		long epochTime = 1279317788000L; // Fri, 16 Jul 2010 22:03:08 GMT;
 		DateTime date = new DateTime(epochTime);
 		file.setCreatedTime(date);
 
-		DateTime parsedDate = PhotosModelDbHelper.getMetaTimeOrCreatedTime(file);
-		assertThat(date.getValue(), is(parsedDate.getValue()));
+		LocalDateTime parsedDate = PhotosModelDbHelper.getMetaTimeOrCreatedTime(file);
+		assertThat(epochTime, is(parsedDate.atZone(ZoneId.of("GMT")).toEpochSecond() * 1000));
 	}
 }

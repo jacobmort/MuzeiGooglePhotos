@@ -18,8 +18,8 @@ import java.io.IOException;
  */
 public class PhotosFetchAsyncTask extends AsyncTask<Void, FileList, Void> {
 	private static final String PHOTO_FIELDS = "files(createdTime,id,imageMediaMetadata(location(latitude,longitude),time)),nextPageToken";
-	private PhotosReceivedInterface mPhotosReceivedInterface;
-	private String mStartingPageToken;
+	private final PhotosReceivedInterface mPhotosReceivedInterface;
+	private final String mStartingPageToken;
 	private boolean mFetchAll = false;
 	private com.google.api.services.drive.Drive mService = null;
 	private Exception mLastError = null;
